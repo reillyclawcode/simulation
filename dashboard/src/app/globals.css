@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #020617;
+  --foreground: #e2e8f0;
 }
 
 @theme inline {
@@ -12,15 +12,110 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, "Inter", system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Glassmorphism card ---- */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ---- Custom range slider (timeline) ---- */
+.timeline-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0.15) 0%,
+    rgba(139, 92, 246, 0.15) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #38bdf8;
+  border: 3px solid #0f172a;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4), 0 0 4px rgba(56, 189, 248, 0.6);
+  cursor: grab;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), 0 0 6px rgba(56, 189, 248, 0.8);
+}
+
+.timeline-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #38bdf8;
+  border: 3px solid #0f172a;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4), 0 0 4px rgba(56, 189, 248, 0.6);
+  cursor: grab;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.timeline-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+.timeline-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0.15) 0%,
+    rgba(139, 92, 246, 0.15) 100%
+  );
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+/* ---- Smooth transitions on glass cards ---- */
+.glass-card {
+  transition: background 0.2s, border-color 0.2s;
 }
