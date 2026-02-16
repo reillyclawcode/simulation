@@ -1,61 +1,57 @@
 # Simulation Toolkit
 
-This repo contains a working prototype for exploring branching futures:
+Branch futures, track the metrics that matter, and visualize the trade-offs.
 
-1. **Python engine** that fans out from a starting year, applies different policy levers, and records metrics (GINI, civic trust, emissions, resilience).
-2. **Next.js dashboard** (`dashboard/`) that reads the generated runs, visualizes branch outcomes, and lets you scrub through individual timelines. An optional AI summary (OpenAI) explains each snapshot in plain language.
-
-## Live docs
+## Live links
 - GitHub repo: https://github.com/reillyclawcode/simulation
 - Docs landing page: https://reillyclawcode.github.io/simulation/
 
-## Folder structure
-
+## What's inside
 ```
 simulation/
-├── dynamics.py            # deterministic + stochastic transitions
-├── metrics.py             # metric functions
-├── scenario_loader.py     # YAML loader for scenario configs
-├── scenario.yaml          # sample scenario (dividend, AI charter, climate capex)
-├── sim_state.py           # dataclass definitions for state
-├── simulate.py            # CLI runner (writes runs/*.json)
-├── runs/                  # generated output files (gitignored)
-└── dashboard/             # Next.js visualization app
+├── sim_state.py         # dataclasses for population, economy, climate, governance
+├── dynamics.py          # transition functions (civic dividends, AI charters, climate capex)
+├── scenario.yaml        # defines horizon (50 years), levers, metrics
+├── simulate.py          # CLI orchestrator -> writes runs/*.json
+├── metrics.py           # scoring functions (GINI, trust, emissions, resilience, AI influence)
+├── runs/                # gitignored outputs (JSON)
+└── dashboard/           # Next.js/Tailwind UI with AI summaries
 ```
 
 ## Requirements
 - Python 3.11+
 - Node.js 20+
 
-## Running the simulator
+## Run the simulator (50-year horizon)
 ```bash
 cd simulation
 python3 simulate.py scenario.yaml --output runs/baseline.json
 ```
-This generates every combination of the levers in `scenario.yaml` (3×2×2 = 12 runs) and stores the trajectories + final metrics in `runs/baseline.json`.
+This fans out every lever combination (civic dividend rates, AI charter toggle, climate capex mix) for 50 years, tracks the metrics each year, and stores trajectories + final scores in `runs/baseline.json`.
 
-## Visualizing the results
+## Launch the dashboard
 ```bash
-cd simulation/dashboard
-npm install              # first time only
-npm run dev              # launches http://localhost:3000
+cd dashboard
+npm install         # first time only
+npm run dev         # visit http://localhost:3000
 ```
 Features:
-- Outcome comparison charts (GINI, civic trust, emissions) per branch.
-- Timeline scrubber showing the exact year while you move the slider.
-- AI-generated summary of the selected snapshot. Set an OpenAI key to enable it:
+- Multi-branch comparison charts (GINI, civic trust, emissions, AI influence).
+- 50-year timeline scrubber that keeps your relative position when switching branches.
+- Structured AI summaries (headline + “Actions taken” bullets) explaining each snapshot.
+- Local OpenAI summary support (optional):
   ```
   OPENAI_API_KEY=sk-...
-  OPENAI_MODEL=gpt-4o-mini   # optional override
+  OPENAI_MODEL=gpt-4o-mini
   ```
-  (Add those to `dashboard/.env.local`.)
+  Never commit secrets; `.env.local` stays on your machine.
 
-## GitHub Pages (docs)
-The repo includes a `docs/` folder (static landing page) and `.github/workflows/pages.yml`. Whenever you push to `main`, GitHub Pages will publish the documentation site so others can read about the project even if they’re not running the code locally.
+## Docs site
+GitHub Pages publishes the contents of `docs/`. Update `docs/index.html` (static landing page) and push to main—the workflow takes care of the rest.
 
-## Next steps
-- Hook real world datasets into the initial state.
-- Add stochastic event handling + pruning strategies.
-- Deploy the dashboard (Vercel or similar) with authenticated access to run archives.
+## Deployment ideas
+- Host the dashboard on Vercel/Netlify (keep the API key in env vars).
+- Wire additional datasets into `sim_state.py` and `dynamics.py` for more realism.
+- Extend metrics (e.g., housing affordability, labor displacement) and add interactive filters.
 
 PRs + ideas welcome.

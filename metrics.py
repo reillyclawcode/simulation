@@ -19,9 +19,14 @@ def resilience_score(state: State) -> float:
   return state.climate.resilience_score
 
 
+def ai_influence(state: State) -> float:
+  return state.economy.ai_influence
+
+
 METRICS = {
   "gini": gini_index,
   "civic_trust": civic_trust,
   "annual_emissions": annual_emissions,
   "resilience_score": resilience_score,
+  "ai_influence": ai_influence,
 }

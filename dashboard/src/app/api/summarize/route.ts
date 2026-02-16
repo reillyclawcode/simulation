@@ -10,16 +10,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "OPENAI_API_KEY not configured" }, { status: 500 });
   }
 
-  const body = await request.json();
-  const { year, gini, civic_trust, emissions, resilience } = body;
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "aborted" });
+  }
+  const { year, gini, civic_trust, emissions, resilience, ai_influence } = body;
 
-  const prompt = `Summarize this simulation snapshot for a general audience:
-Year: ${year}
-GINI: ${gini}
-Civic trust: ${civic_trust}
-Annual emissions: ${emissions}
-Resilience: ${resilience}
-Please explain what it means for ordinary people and what choices likely led here.`;
+  const prompt = `Summarize this simulation snapshot in two parts:
+1. A concise 2-3 sentence summary people can grasp immediately.
+2. A bullet list (2-3 items) describing the likely actions/policies that led here.
+Data:
+- Year: ${year}
+- GINI: ${gini}
+- Civic trust: ${civic_trust}
+- Annual emissions: ${emissions}
+- Resilience: ${resilience}
+- AI influence: ${ai_influence}
+Focus on what this means for daily life, AI adoption, and governance. Explain whether the AI influence score is helping or hurting communities.`;
 
   try {
     const completion = await openai.chat.completions.create({

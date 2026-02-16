@@ -18,7 +18,7 @@ def initial_state(start_year: int) -> State:
   return State(
     year=start_year,
     population=Population(total=1.0, working_age=0.6, youth=0.25, elderly=0.15),
-    economy=Economy(gdp=1.0, gdp_growth=0.02, gini=0.38, civic_trust=0.45),
+    economy=Economy(gdp=1.0, gdp_growth=0.02, gini=0.38, civic_trust=0.45, ai_influence=0.15),
     climate=Climate(annual_emissions=36.0, cumulative_emissions=1500.0, resilience_score=0.4),
     governance=Governance(ai_charter=False, civic_dividend_rate=0.02, transition_os_funded=False)
   )

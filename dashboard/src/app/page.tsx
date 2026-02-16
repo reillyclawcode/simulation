@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -27,6 +27,9 @@ export default function Home() {
   const [yearIndex, setYearIndex] = useState(0);
   const [summary, setSummary] = useState<string>("");
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [timelinePosition, setTimelinePosition] = useState(1);
+  const scrubTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetch("/api/runs")
@@ -39,20 +42,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!runs[selectedBranch]) {
-      setSelectedBranch(0);
-      setYearIndex(0);
-    } else {
-      const trajectory = runs[selectedBranch]?.trajectory ?? [];
-      setYearIndex(Math.max(0, trajectory.length - 1));
-    }
-  }, [runs, selectedBranch]);
+    const trajectory = runs[selectedBranch]?.trajectory ?? [];
+    if (trajectory.length === 0) return;
+    const idx = Math.round((trajectory.length - 1) * timelinePosition);
+    setYearIndex(Math.min(trajectory.length - 1, Math.max(0, idx)));
+  }, [runs, selectedBranch, timelinePosition]);
 
   useEffect(() => {
-    if (!runs[selectedBranch]) return;
+    if (!runs[selectedBranch] || isScrubbing) return;
     const state = runs[selectedBranch].trajectory?.[yearIndex];
     if (!state) return;
-    setSummary("");
+    const controller = new AbortController();
+    let cancelled = false;
     setSummaryLoading(true);
 
     fetch("/api/summarize", {
@@ -63,16 +64,33 @@ export default function Home() {
         gini: state.economy.gini,
         civic_trust: state.economy.civic_trust,
         emissions: state.climate.annual_emissions,
-        resilience: state.climate.resilience_score
-      })
+        resilience: state.climate.resilience_score,
+        ai_influence: state.economy.ai_influence
+      }),
+      signal: controller.signal
     })
       .then((res) => res.json())
       .then((data) => {
-        setSummary(data.summary || "");
+        if (!cancelled) {
+          setSummary(data.summary || "");
+        }
       })
-      .catch(() => setSummary("Summary unavailable"))
-      .finally(() => setSummaryLoading(false));
-  }, [runs, selectedBranch, yearIndex]);
+      .catch((err) => {
+        if (!cancelled && err.name !== "AbortError") {
+          setSummary("Summary unavailable");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setSummaryLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [runs, selectedBranch, yearIndex, isScrubbing]);
 
   const metricData = (metric: string) =>
     runs.map((run, idx) => ({
@@ -83,6 +101,21 @@ export default function Home() {
   const selectedRun = runs[selectedBranch];
   const selectedState = selectedRun?.trajectory?.[yearIndex];
   const timelineYears = selectedRun?.trajectory?.map((state: any) => state.year) ?? [];
+
+  const handleYearChange = (value: number) => {
+    const trajectory = runs[selectedBranch]?.trajectory ?? [];
+    const maxIndex = Math.max(0, trajectory.length - 1);
+    const clamped = Math.max(0, Math.min(maxIndex, value));
+    setYearIndex(clamped);
+    setTimelinePosition(maxIndex > 0 ? clamped / maxIndex : 0);
+    setIsScrubbing(true);
+    if (scrubTimeoutRef.current) {
+      clearTimeout(scrubTimeoutRef.current);
+    }
+    scrubTimeoutRef.current = setTimeout(() => {
+      setIsScrubbing(false);
+    }, 600);
+  };
 
   const branchLabel = useMemo(() => {
     if (!selectedRun) return "";
@@ -165,6 +198,18 @@ export default function Home() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <div className="mt-6">
+                <h3 className="text-lg font-medium text-white">AI influence</h3>
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={metricData("ai_influence")}>
+                    <XAxis dataKey="branch" stroke="#94a3b8" />
+                    <YAxis stroke="#94a3b8" domain={[0, 1]} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="value" stroke="#facc15" name="AI influence" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </section>
 
             <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -196,7 +241,7 @@ export default function Home() {
                     min={0}
                     max={Math.max(0, (selectedRun.trajectory?.length ?? 1) - 1)}
                     value={yearIndex}
-                    onChange={(e) => setYearIndex(Number(e.target.value))}
+                    onChange={(e) => handleYearChange(Number(e.target.value))}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-slate-400">
@@ -210,12 +255,13 @@ export default function Home() {
                         <MetricCard label="Civic trust" value={selectedState.economy.civic_trust.toFixed(3)} explanation="Social cohesion" />
                         <MetricCard label="Annual emissions" value={`${selectedState.climate.annual_emissions.toFixed(2)} Gt`} explanation="Climate progress" />
                         <MetricCard label="Resilience" value={selectedState.climate.resilience_score.toFixed(3)} explanation="System robustness" />
+                        <MetricCard label="AI influence" value={selectedState.economy.ai_influence.toFixed(3)} explanation="AI presence in daily systems" />
                       </div>
                       <div className="rounded-lg border border-white/10 bg-slate-800/70 p-3">
                         <p className="text-xs uppercase tracking-widest text-slate-400">AI summary</p>
                         {summaryLoading && <p className="text-sm text-slate-400">Generating summary…</p>}
                         {!summaryLoading && summary && (
-                          <p className="text-sm text-slate-200">{summary}</p>
+                          <SummaryBlock text={summary} />
                         )}
                         {!summaryLoading && !summary && (
                           <p className="text-sm text-slate-400">No summary available.</p>
@@ -239,6 +285,50 @@ function MetricCard({ label, value, explanation }: { label: string; value: strin
       <p className="text-xs uppercase tracking-widest text-slate-400">{label}</p>
       <p className="text-2xl font-semibold text-white">{value}</p>
       <p className="text-xs text-slate-400">{explanation}</p>
+    </div>
+  );
+}
+
+
+
+
+
+
+function SummaryBlock({ text }: { text: string }) {
+  const parts = text.split("\n");
+  const summaryLines: string[] = [];
+  const actionLines: string[] = [];
+  let inActions = false;
+
+  for (const raw of parts) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (line.toLowerCase().startsWith("actions:")) {
+      inActions = true;
+      continue;
+    }
+    if (inActions || line.startsWith("-")) {
+      actionLines.push(line.replace(/^[*-]\s*/, ""));
+    } else {
+      summaryLines.push(line);
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      {summaryLines.length > 0 && (
+        <p className="text-sm text-slate-200">{summaryLines.join(" ")}</p>
+      )}
+      {actionLines.length > 0 && (
+        <div>
+          <p className="text-xs uppercase tracking-widest text-slate-400">Actions taken</p>
+          <ul className="list-disc pl-5 text-sm text-slate-200">
+            {actionLines.map((line, idx) => (
+              <li key={idx}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

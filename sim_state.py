@@ -18,6 +18,7 @@ class Economy:
   gdp_growth: float
   gini: float
   civic_trust: float
+  ai_influence: float
 
 
 @dataclass(frozen=True)

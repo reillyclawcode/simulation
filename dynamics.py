@@ -27,7 +27,11 @@ def apply_ai_charter(state: State, enabled: bool | None = None) -> State:
     return state
 
   new_governance = replace(state.governance, transition_os_funded=True)
-  new_economy = replace(state.economy, civic_trust=min(1.0, state.economy.civic_trust + 0.01))
+  new_economy = replace(
+    state.economy,
+    civic_trust=min(1.0, state.economy.civic_trust + 0.01),
+    ai_influence=min(1.0, state.economy.ai_influence + 0.02)
+  )
 
   return replace(state, governance=new_governance, economy=new_economy)
 
@@ -36,7 +40,10 @@ def evolve_economy(state: State) -> State:
   noise = gauss(0, 0.006)
   growth = state.economy.gdp_growth + noise
   gdp = state.economy.gdp * (1 + growth)
-  new_economy = replace(state.economy, gdp=gdp, gdp_growth=growth)
+  ai_growth = 0.01 + (0.01 if state.governance.ai_charter else 0) + (0.005 if state.governance.transition_os_funded else 0)
+  ai_growth += gauss(0, 0.002)
+  new_ai = min(1.0, max(0.0, state.economy.ai_influence + ai_growth))
+  new_economy = replace(state.economy, gdp=gdp, gdp_growth=growth, ai_influence=new_ai)
   return replace(state, economy=new_economy)
 
 
