@@ -1,6 +1,6 @@
 # Simulation Toolkit
 
-Branch futures, track the metrics that matter, and visualize the trade-offs.
+Fifty-year “what-if” engine combining policy levers (civic dividends, AI charters, climate capex) with AI-authored narratives. Fan out branches, track structural metrics (GINI, trust, emissions, resilience, AI influence), and read how medicine, food systems, materials, quantum labs, and civic culture evolve along each path.
 
 ## Live links
 - GitHub repo: https://github.com/reillyclawcode/simulation
