@@ -248,96 +248,124 @@ function MetricCard({ label, value, explanation }: { label: string; value: strin
 
 
 function SummaryBlock({ text }: { text: string }) {
-  const parts = text.split("\n");
-  const summaryLines: string[] = [];
-  const actionLines: string[] = [];
-  const impactLines: string[] = [];
-  const aiLines: string[] = [];
-  const nextStepLines: string[] = [];
-  let section: "summary" | "actions" | "impact" | "ai" | "next" = "summary";
+  const lines = text.split("
+");
 
-  for (const raw of parts) {
-    const line = raw.trim();
-    if (!line) continue;
-    const lower = line.toLowerCase();
-    if (lower.startsWith("summary:")) {
+  type Section = "summary" | "actions" | "impact" | "ai" | "next" | null;
+
+  const summaryParagraphs: string[] = [];
+  const actions: string[] = [];
+  const impact: string[] = [];
+  const aiInfluence: string[] = [];
+  const nextSteps: string[] = [];
+
+  let section: Section = null;
+  let summaryBuffer: string[] = [];
+
+  const flushSummary = () => {
+    if (summaryBuffer.length > 0) {
+      summaryParagraphs.push(summaryBuffer.join(" ").trim());
+      summaryBuffer = [];
+    }
+  };
+
+  const appendBullet = (arr: string[], line: string) => {
+    if (line.startsWith("- ")) {
+      arr.push(line.replace(/^\-\s*/, ""));
+    } else if (arr.length > 0) {
+      arr[arr.length - 1] = `${arr[arr.length - 1]} ${line}`;
+    }
+  };
+
+  for (const raw of lines) {
+    const trimmed = raw.trim();
+    if (/^##\s+summary/i.test(trimmed)) {
+      flushSummary();
       section = "summary";
       continue;
     }
-    if (lower.startsWith("actions:")) {
+    if (/^##\s+actions/i.test(trimmed)) {
+      flushSummary();
       section = "actions";
       continue;
     }
-    if (lower.startsWith("impact:")) {
+    if (/^##\s+impact/i.test(trimmed)) {
+      flushSummary();
       section = "impact";
       continue;
     }
-    if (lower.startsWith("ai influence:")) {
+    if (/^##\s+ai influence/i.test(trimmed)) {
+      flushSummary();
       section = "ai";
       continue;
     }
-    if (lower.startsWith("next steps:")) {
+    if (/^##\s+next steps/i.test(trimmed)) {
+      flushSummary();
       section = "next";
       continue;
     }
 
-    const normalized = line.replace(/^[*-]\s*/, "");
-    if (section === "actions") {
-      actionLines.push(normalized);
+    if (!trimmed) {
+      if (section === "summary") {
+        flushSummary();
+      }
+      continue;
+    }
+
+    if (section === "summary") {
+      summaryBuffer.push(trimmed);
+    } else if (section === "actions") {
+      appendBullet(actions, trimmed);
     } else if (section === "impact") {
-      impactLines.push(normalized);
+      appendBullet(impact, trimmed);
     } else if (section === "ai") {
-      aiLines.push(normalized);
+      appendBullet(aiInfluence, trimmed);
     } else if (section === "next") {
-      nextStepLines.push(normalized);
-    } else {
-      summaryLines.push(normalized);
+      appendBullet(nextSteps, trimmed);
     }
   }
 
+  flushSummary();
+
+  const renderBullets = (items: string[]) => (
+    <ul className="list-disc pl-5 text-sm text-slate-200 space-y-2">
+      {items.map((line, idx) => (
+        <li key={idx}>{line}</li>
+      ))}
+    </ul>
+  );
+
   return (
-    <div className="space-y-3">
-      {summaryLines.length > 0 && (
-        <p className="text-sm text-slate-200">{summaryLines.join(" ")}</p>
+    <div className="space-y-5">
+      {summaryParagraphs.length > 0 && (
+        <div className="space-y-3">
+          {summaryParagraphs.map((para, idx) => (
+            <p key={idx} className="text-sm text-slate-200">{para}</p>
+          ))}
+        </div>
       )}
-      {actionLines.length > 0 && (
+      {actions.length > 0 && (
         <div>
           <p className="text-xs uppercase tracking-widest text-slate-400">Actions taken</p>
-          <ul className="list-disc pl-5 text-sm text-slate-200">
-            {actionLines.map((line, idx) => (
-              <li key={idx}>{line}</li>
-            ))}
-          </ul>
+          {renderBullets(actions)}
         </div>
       )}
-      {impactLines.length > 0 && (
+      {impact.length > 0 && (
         <div className="rounded-lg border border-white/5 bg-slate-900/60 p-3">
           <p className="text-xs uppercase tracking-widest text-slate-400">Impact</p>
-          <ul className="list-disc pl-5 text-sm text-slate-200">
-            {impactLines.map((line, idx) => (
-              <li key={idx}>{line}</li>
-            ))}
-          </ul>
+          {renderBullets(impact)}
         </div>
       )}
-      {aiLines.length > 0 && (
+      {aiInfluence.length > 0 && (
         <div className="rounded-lg border border-emerald-400/30 bg-slate-900/60 p-3">
           <p className="text-xs uppercase tracking-widest text-slate-400">AI influence</p>
-          <ul className="list-disc pl-5 text-sm text-slate-200">
-            {aiLines.map((line, idx) => (
-              <li key={idx}>{line}</li>
-            ))}
-          </ul>
+          {renderBullets(aiInfluence)}
         </div>
       )}
-      {nextStepLines.length > 0 && (
+      {nextSteps.length > 0 && (
         <div className="rounded-lg border border-sky-500/30 bg-slate-900/60 p-3">
           <p className="text-xs uppercase tracking-widest text-slate-400">Next steps</p>
-          <ul className="list-disc pl-5 text-sm text-slate-200">
-            {nextStepLines.map((line, idx) => (
-              <li key={idx}>{line}</li>
-            ))}
-          </ul>
+          {renderBullets(nextSteps)}
         </div>
       )}
     </div>

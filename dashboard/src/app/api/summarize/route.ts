@@ -18,18 +18,28 @@ export async function POST(request: NextRequest) {
   }
   const { year, gini, civic_trust, emissions, resilience, ai_influence } = body;
 
-  const prompt = `Summarize this simulation snapshot in five labeled sections (Summary, Actions, Impact, AI Influence, Next Steps). Follow this format exactly:
-Summary:
-- two paragraphs describing the world at this year: start with the lived experience (infrastructure, mood, notable shifts) and weave in the key metrics without listing them. End with a single sentence that teases what to look for in the detailed sections below.
-Actions:
-- formatted as markdown bullets ("- "), 2-3 bullets where each bullet is 2-3 sentences describing the policy/intervention, why it was used, and the contextual signals that prompted it
-Impact:
-- formatted as markdown bullets, 2-3 bullets where each bullet is 2-3 sentences explaining how a specific action moved one or more metrics, citing the metric values
-AI Influence:
-- formatted as markdown bullets, 2-3 bullets where each bullet is 2-3 sentences explaining how the AI influence score (${ai_influence}) is affecting daily life, including guardrails or risks
-Next Steps:
-- formatted as markdown bullets, 2-3 bullets where each bullet is 2-3 sentences tied to the metric under the most stress or with spare capacity, citing the metric value
-Use the metrics below to ground your answer and provide concrete numbers or comparisons whenever possible:
+  const prompt = `Produce MARKDOWN in this exact structure so the dashboard can render readable sections:
+## Summary
+Paragraph 1 describing lived experience, infrastructure, mood, notable shifts (no bullet). Mention key metrics naturally in prose.
+
+Paragraph 2 continuing the story, highlighting tensions or opportunities, again weaving in metrics. End with a sentence that tees up the detailed sections.
+
+## Actions
+- Bullet 1 (2-3 sentences) describing the intervention, why it was deployed, and signals that prompted it.
+- Bullet 2 (optional third bullet) ...
+
+## Impact
+- Bullet 1 (2-3 sentences) tying a specific action to metric movement, citing the numeric values.
+- Bullet 2 ...
+
+## AI Influence
+- Bullet 1 (2-3 sentences) explaining how the AI influence score (${ai_influence}) affects daily life, including guardrails or risks.
+- Bullet 2 ...
+
+## Next Steps
+- Bullet 1 (2-3 sentences) recommending a move tied to the metric under the most stress or with spare capacity, citing the metric value.
+- Bullet 2 ...
+Use the metrics below to ground every paragraph/bullet with concrete numbers or comparisons:
 - Year: ${year}
 - GINI: ${gini}
 - Civic trust: ${civic_trust}
@@ -37,11 +47,11 @@ Use the metrics below to ground your answer and provide concrete numbers or comp
 - Resilience: ${resilience}
 - AI influence: ${ai_influence}
 Rules:
-1. Summary should read like a short report rather than a metric list—describe scenes, stakeholders, and moods while still grounding in numbers.
-2. Every bullet in Actions, Impact, AI Influence, and Next Steps must contain at least one plausible driver/cause (e.g., budget shifts, social response) and link back to the numeric metrics above.
-3. Keep the tone human and observational—avoid robotic phrasing or repeated sentence templates.
-4. Do not repeat the same phrasing between sections—tailor each explanation to the current data.
-5. Next Steps must reference the specific metric value it aims to improve or protect (e.g., "Civic trust is 0.42, so...").`;
+1. Summary must read like a short report (no numbered lists) and include sensory/contextual cues.
+2. Every bullet must mention at least one plausible driver/cause and reference the relevant metric value.
+3. Keep the tone human and observational—vary sentence structure.
+4. Do not reuse wording between sections.
+5. Next Steps must explicitly reference the metric value it aims to improve or protect (e.g., "Civic trust is 0.42, so...").`;
 
   try {
     const completion = await openai.chat.completions.create({
