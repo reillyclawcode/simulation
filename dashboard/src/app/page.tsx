@@ -13,6 +13,14 @@ import {
   Bar
 } from "recharts";
 
+const narrativeSections = [
+  { title: "Food & biosystems", explainer: "Agrifood innovation, nutrition security, and ecosystem resilience signals pulled from each snapshot." },
+  { title: "Medicine & healthspan", explainer: "Longevity, therapeutics, diagnostics, and access trends reshaping population structure." },
+  { title: "Materials & infrastructure", explainer: "Advanced materials, storage, and urban systems that drive emissions and resilience." },
+  { title: "Quantum & compute", explainer: "Compute policy, edge AI, and quantum labs that stress governance and economic planning." },
+  { title: "Civic life & culture", explainer: "Social cohesion, participatory tooling, and cultural reactions to change." },
+];
+
 const metricDescriptions = {
   gini: { title: "GINI index", explainer: "Lower values mean income is more evenly distributed." },
   civic_trust: { title: "Civic trust", explainer: "Proxy for willingness to collaborate and accept shared rules." },
@@ -129,21 +137,20 @@ export default function Home() {
       <div className="mx-auto max-w-6xl px-4 py-12">
         <header className="space-y-4 border-b border-white/10 pb-6">
           <p className="text-sm uppercase tracking-[0.4em] text-sky-300">Future Sim Dashboard</p>
-          <h1 className="text-3xl font-semibold text-white">What the simulation is doing</h1>
+          <h1 className="text-3xl font-semibold text-white">Worldbuilding from civic levers to frontier tech</h1>
           <p className="text-slate-300">
-            Each run represents a different policy recipe (civic dividend size, AI charter on/off, climate investment mix).
-            The simulator advances society 10 years, tracks inequality (GINI), civic trust, emissions, and resilience, then stores the results.
-            Scroll below to see how the outcomes shift and scrub through the timeline of a single branch.
+            Every branch mixes policy levers (civic dividend, AI charter, climate capex) and runs 50 years forward to see how inequality, trust,
+            emissions, resilience, and AI influence evolve. The summaries now pull in medicine, food systems, materials, quantum breakthroughs,
+            and civic culture so you can read the state of the world—not just its charts. Scrub the timeline to drop into any year.
           </p>
         </header>
 
         <section className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold text-white">How to read this</h2>
           <ul className="list-disc space-y-2 pl-6 text-slate-300">
-            <li><strong>GINI</strong> tells us how concentrated income is (lower = more equitable).</li>
-            <li><strong>Civic trust</strong> is a proxy for social stability and willingness to cooperate.</li>
-            <li><strong>Annual emissions</strong> shows whether we stayed on track for climate goals.</li>
-            <li>The timeline scrubber lets you inspect any year of a selected branch to see what the world looks like inside that simulation.</li>
+            <li><strong>Structural metrics</strong> (GINI, civic trust, emissions, resilience, AI influence) anchor every chart and narrative.</li>
+            <li><strong>AI report cards</strong> unpack the same snapshot across Actions, Impact, Food & Biosystems, Medicine, Materials, Quantum, and Civic Life.</li>
+            <li><strong>Scrub + compare</strong>: pick a branch, move the slider, and each section rewrites itself for that exact year.</li>
           </ul>
         </section>
 
@@ -154,6 +161,19 @@ export default function Home() {
               <p className="mt-2 text-sm text-slate-300">{info.explainer}</p>
             </article>
           ))}
+        </section>
+
+
+        <section className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-xl font-semibold text-white">What the AI report covers</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {narrativeSections.map((section) => (
+              <article key={section.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.3em] text-sky-300">{section.title}</p>
+                <p className="mt-2 text-sm text-slate-300">{section.explainer}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         {loading && <p className="mt-6 text-slate-400">Loading…</p>}
