@@ -13,6 +13,13 @@ import {
   Bar
 } from "recharts";
 
+const metricDescriptions = {
+  gini: { title: "GINI index", explainer: "Lower values mean income is more evenly distributed." },
+  civic_trust: { title: "Civic trust", explainer: "Proxy for willingness to collaborate and accept shared rules." },
+  annual_emissions: { title: "Annual emissions", explainer: "Gigatons of CO₂-equivalent released this year." },
+  ai_influence: { title: "AI influence", explainer: "How deeply automation and AI copilots shape daily life." },
+};
+
 interface RunData {
   branch: Record<string, any>;
   trajectory: any[];
@@ -92,12 +99,6 @@ export default function Home() {
     };
   }, [runs, selectedBranch, yearIndex, isScrubbing]);
 
-  const metricData = (metric: string) =>
-    runs.map((run, idx) => ({
-      branch: idx + 1,
-      value: run.final_metrics?.[metric] || 0
-    }));
-
   const selectedRun = runs[selectedBranch];
   const selectedState = selectedRun?.trajectory?.[yearIndex];
   const timelineYears = selectedRun?.trajectory?.map((state: any) => state.year) ?? [];
@@ -146,6 +147,15 @@ export default function Home() {
           </ul>
         </section>
 
+        <section className="mt-6 grid gap-4 sm:grid-cols-2">
+          {Object.entries(metricDescriptions).map(([key, info]) => (
+            <article key={key} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-sky-300">{info.title}</p>
+              <p className="mt-2 text-sm text-slate-300">{info.explainer}</p>
+            </article>
+          ))}
+        </section>
+
         {loading && <p className="mt-6 text-slate-400">Loading…</p>}
         {error && <p className="mt-6 text-red-300">{error}</p>}
 
@@ -155,63 +165,6 @@ export default function Home() {
 
         {!loading && runs.length > 0 && (
           <div className="mt-10 grid gap-8">
-            <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold text-white">Outcome comparison by branch</h2>
-              <p className="mb-4 text-sm text-slate-400">
-                Bars and lines compare the final scores after 10 years. Use this to spot which levers push us toward equitable, stable futures.
-              </p>
-              <div className="grid gap-6 lg:grid-cols-2">
-                <div>
-                  <h3 className="text-lg font-medium text-white">GINI Index (lower is better)</h3>
-                  <ResponsiveContainer width="100%" height={260}>
-                    <BarChart data={metricData("gini")}>
-                      <XAxis dataKey="branch" stroke="#94a3b8" />
-                      <YAxis stroke="#94a3b8" domain={[0, 1]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="value" fill="#22d3ee" name="GINI" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white">Civic trust trajectory</h3>
-                  <ResponsiveContainer width="100%" height={260}>
-                    <LineChart data={metricData("civic_trust")}>
-                      <XAxis dataKey="branch" stroke="#94a3b8" />
-                      <YAxis stroke="#94a3b8" domain={[0, 1]} />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="value" stroke="#a855f7" name="Civic trust" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="mt-6">
-                <h3 className="text-lg font-medium text-white">Annual emissions</h3>
-                <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={metricData("annual_emissions")}>
-                    <XAxis dataKey="branch" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#fb7185" name="Annual emissions" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-6">
-                <h3 className="text-lg font-medium text-white">AI influence</h3>
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={metricData("ai_influence")}>
-                    <XAxis dataKey="branch" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" domain={[0, 1]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#facc15" name="AI influence" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
@@ -298,19 +251,47 @@ function SummaryBlock({ text }: { text: string }) {
   const parts = text.split("\n");
   const summaryLines: string[] = [];
   const actionLines: string[] = [];
-  let inActions = false;
+  const impactLines: string[] = [];
+  const aiLines: string[] = [];
+  const nextStepLines: string[] = [];
+  let section: "summary" | "actions" | "impact" | "ai" | "next" = "summary";
 
   for (const raw of parts) {
     const line = raw.trim();
     if (!line) continue;
-    if (line.toLowerCase().startsWith("actions:")) {
-      inActions = true;
+    const lower = line.toLowerCase();
+    if (lower.startsWith("summary:")) {
+      section = "summary";
       continue;
     }
-    if (inActions || line.startsWith("-")) {
-      actionLines.push(line.replace(/^[*-]\s*/, ""));
+    if (lower.startsWith("actions:")) {
+      section = "actions";
+      continue;
+    }
+    if (lower.startsWith("impact:")) {
+      section = "impact";
+      continue;
+    }
+    if (lower.startsWith("ai influence:")) {
+      section = "ai";
+      continue;
+    }
+    if (lower.startsWith("next steps:")) {
+      section = "next";
+      continue;
+    }
+
+    const normalized = line.replace(/^[*-]\s*/, "");
+    if (section === "actions") {
+      actionLines.push(normalized);
+    } else if (section === "impact") {
+      impactLines.push(normalized);
+    } else if (section === "ai") {
+      aiLines.push(normalized);
+    } else if (section === "next") {
+      nextStepLines.push(normalized);
     } else {
-      summaryLines.push(line);
+      summaryLines.push(normalized);
     }
   }
 
@@ -324,6 +305,36 @@ function SummaryBlock({ text }: { text: string }) {
           <p className="text-xs uppercase tracking-widest text-slate-400">Actions taken</p>
           <ul className="list-disc pl-5 text-sm text-slate-200">
             {actionLines.map((line, idx) => (
+              <li key={idx}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {impactLines.length > 0 && (
+        <div className="rounded-lg border border-white/5 bg-slate-900/60 p-3">
+          <p className="text-xs uppercase tracking-widest text-slate-400">Impact</p>
+          <ul className="list-disc pl-5 text-sm text-slate-200">
+            {impactLines.map((line, idx) => (
+              <li key={idx}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {aiLines.length > 0 && (
+        <div className="rounded-lg border border-emerald-400/30 bg-slate-900/60 p-3">
+          <p className="text-xs uppercase tracking-widest text-slate-400">AI influence</p>
+          <ul className="list-disc pl-5 text-sm text-slate-200">
+            {aiLines.map((line, idx) => (
+              <li key={idx}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {nextStepLines.length > 0 && (
+        <div className="rounded-lg border border-sky-500/30 bg-slate-900/60 p-3">
+          <p className="text-xs uppercase tracking-widest text-slate-400">Next steps</p>
+          <ul className="list-disc pl-5 text-sm text-slate-200">
+            {nextStepLines.map((line, idx) => (
               <li key={idx}>{line}</li>
             ))}
           </ul>

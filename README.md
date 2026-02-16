@@ -18,6 +18,25 @@ simulation/
 └── dashboard/           # Next.js/Tailwind UI with AI summaries
 ```
 
+## AI-generated trajectories (stopgap data)
+Need believable curves before the real datasets land? Run the OpenAI override pass to hallucinate 50-year metrics per branch:
+```bash
+cd simulation
+python3 ai_override.py runs/baseline.json --output runs/ai_override.json --horizon 50
+```
+This script reads the deterministic `runs/baseline.json`, prompts the OpenAI Responses API with a JSON schema, and writes `runs/ai_override.json` (ignored by git). Set `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`) in your shell before running.
+
+## Narrative dashboard (AI summaries)
+The dashboard now renders five AI-authored sections for any year you scrub to:
+- **Summary** – two paragraphs painting the lived reality at that timestamp.
+- **Actions** – bullets explaining which levers were pulled and why.
+- **Impact** – bullets tying those moves back to GINI, trust, emissions, resilience, and AI influence values.
+- **AI influence** – bullets narrating how automation/copilots are affecting daily life and where guardrails are needed.
+- **Next steps** – metric-referenced recommendations for improving or protecting the trajectory.
+
+Run the UI locally with `npm run dev` (see below) and set `OPENAI_API_KEY` so `/api/summarize` can call the Responses API. Each request stays under 5 seconds thanks to schema-constrained prompts + retries.
+
+
 ## Requirements
 - Python 3.11+
 - Node.js 20+
@@ -36,15 +55,10 @@ npm install         # first time only
 npm run dev         # visit http://localhost:3000
 ```
 Features:
-- Multi-branch comparison charts (GINI, civic trust, emissions, AI influence).
-- 50-year timeline scrubber that keeps your relative position when switching branches.
-- Structured AI summaries (headline + “Actions taken” bullets) explaining each snapshot.
-- Local OpenAI summary support (optional):
-  ```
-  OPENAI_API_KEY=sk-...
-  OPENAI_MODEL=gpt-4o-mini
-  ```
-  Never commit secrets; `.env.local` stays on your machine.
+- Branch comparison cards plus timeline scrubber (stay anchored to the same percentile when you hop branches).
+- Metric deck that updates in real time (GINI, civic trust, emissions, resilience, AI influence).
+- AI narrative stack: Summary, Actions, Impact, AI Influence, and Next Steps — each rendered as readable paragraphs/bullets.
+- Local OpenAI support (Responses API). Create an `.env.local` with your key/model and keep it out of git.
 
 ## Docs site
 GitHub Pages publishes the contents of `docs/`. Update `docs/index.html` (static landing page) and push to main—the workflow takes care of the rest.
