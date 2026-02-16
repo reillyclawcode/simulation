@@ -1,22 +1,191 @@
-<h1>Simulation Toolkit Docs</h1>
-<p>Welcome! This site mirrors the README from <a href="https://github.com/reillyclawcode/simulation">https://github.com/reillyclawcode/simulation</a> and is published via GitHub Pages.</p>
-<h2>What this project does</h2>
-<ul>
-<li>Fans out alternative futures from the present by toggling policy + investment levers.</li>
-<li>Scores every branch with simple metrics: GINI (inequality), civic trust, annual emissions, resilience.</li>
-<li>Provides a dashboard to compare branches, scrub through timelines, and read AI summaries explaining each snapshot.</li>
-</ul>
-<h2>Getting started</h2>
-<ol>
-<li>Clone the repo.</li>
-<li>Run <code>python3 simulate.py scenario.yaml --output runs/baseline.json</code>.</li>
-<li>Go to <code>dashboard/</code> and run <code>npm install</code> then <code>npm run dev</code> (<a href="http://localhost:3000">http://localhost:3000</a>).</li>
-</ol>
-<h2>Environment variables</h2>
-<p>Set the following in <code>dashboard/.env.local</code> to enable AI summaries:</p>
-<pre><code>OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
-</code></pre>
-<h2>Need help?</h2>
-<p>Open an issue on GitHub or reach out through the repo discussions tab.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulation Toolkit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020617;
+      --card: rgba(15, 23, 42, 0.8);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0%, #020617 60%, #01030f 100%);
+      color: var(--text);
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .shell {
+      min-height: 100vh;
+      padding: 3rem 1.5rem 4rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+    }
+    .badge {
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      font-size: 0.7rem;
+      color: var(--accent);
+    }
+    h1 {
+      margin: 0.6rem 0;
+      font-size: clamp(2.2rem, 6vw, 3rem);
+    }
+    p.lede {
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      background: var(--card);
+      box-shadow: 0 20px 60px rgba(2, 6, 23, 0.5);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    code, pre {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.95rem;
+    }
+    pre {
+      background: rgba(15, 23, 42, 0.8);
+      padding: 1rem;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      padding: 0.75rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn.primary {
+      background: linear-gradient(120deg, #0ea5e9, #38bdf8);
+      color: #012538;
+    }
+    .btn.secondary {
+      border-color: var(--border);
+      color: var(--text);
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    details {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <p class="badge">Simulation toolkit</p>
+      <h1>Branch futures, measure tradeoffs, act on the patterns.</h1>
+      <p class="lede">
+        This site mirrors the repo at <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener">github.com/reillyclawcode/simulation</a>.
+        It includes a Python engine for fanning out alternative futures and a Next.js dashboard with AI summaries that translate each trajectory into plain English.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener">View GitHub repo →</a>
+        <a class="btn secondary" href="#run">Run it locally</a>
+      </div>
+    </header>
 
+    <section class="grid" id="what">
+      <article class="card">
+        <h2>What the simulator does</h2>
+        <ul>
+          <li>Fans out branches by toggling civic dividends, AI charters, and climate investments.</li>
+          <li>Tracks metrics each year (GINI, civic trust, emissions, resilience).</li>
+          <li>Saves every trajectory to <code>runs/*.json</code> for analysis.</li>
+          <li>Dashboard visualizes branch comparisons, lets you scrub through time, and generates AI summaries.</li>
+        </ul>
+      </article>
+
+      <article class="card" id="run">
+        <h2>Run the simulation</h2>
+        <p>Make sure you have Python 3.11+ and Node.js 20+ installed.</p>
+        <pre><code>git clone https://github.com/reillyclawcode/simulation.git
+cd simulation
+python3 simulate.py scenario.yaml --output runs/baseline.json</code></pre>
+        <p>This generates every scenario combination (3×2×2 = 12 runs) and stores the metrics in <code>runs/baseline.json</code>.</p>
+        <h3>Launch the dashboard</h3>
+        <pre><code>cd dashboard
+npm install   # first time
+npm run dev   # open http://localhost:3000</code></pre>
+      </article>
+
+      <article class="card">
+        <h2>Optional AI summaries</h2>
+        <p>Drop your OpenAI key into <code>dashboard/.env.local</code> to let the UI explain each snapshot:</p>
+        <pre><code>OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini</code></pre>
+        <p>The serverless route <code>/api/summarize</code> stays server-side and never exposes the key publicly. Never commit secrets to Git.</p>
+      </article>
+
+      <article class="card">
+        <h2>Peek at the code</h2>
+        <p>The CLI entry point that orchestrates runs:</p>
+        <details>
+          <summary>Show <code>simulate.py</code></summary>
+          <pre><code>git clone ... &amp;&amp; cat simulate.py</code></pre>
+          <p>For the live file, <a href="https://github.com/reillyclawcode/simulation/blob/main/simulate.py" target="_blank" rel="noopener">open it on GitHub</a>. GitHub Pages can’t execute Python, so you still run it locally.</p>
+        </details>
+      </article>
+    </section>
+
+    <footer>
+      &copy; 2026 Simulation Toolkit · Built with static HTML/CSS · <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener">GitHub repo</a>
+    </footer>
+  </div>
+</body>
+</html>
