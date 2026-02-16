@@ -5,6 +5,10 @@ This repo contains a working prototype for exploring branching futures:
 1. **Python engine** that fans out from a starting year, applies different policy levers, and records metrics (GINI, civic trust, emissions, resilience).
 2. **Next.js dashboard** (`dashboard/`) that reads the generated runs, visualizes branch outcomes, and lets you scrub through individual timelines. An optional AI summary (OpenAI) explains each snapshot in plain language.
 
+## Live docs
+- GitHub repo: https://github.com/reillyclawcode/simulation
+- Docs landing page: https://reillyclawcode.github.io/simulation/
+
 ## Folder structure
 
 ```
