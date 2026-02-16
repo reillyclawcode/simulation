@@ -1,0 +1,22 @@
+<h1>Simulation Toolkit Docs</h1>
+<p>Welcome! This site mirrors the README from <a href="https://github.com/reillyclawcode/simulation">https://github.com/reillyclawcode/simulation</a> and is published via GitHub Pages.</p>
+<h2>What this project does</h2>
+<ul>
+<li>Fans out alternative futures from the present by toggling policy + investment levers.</li>
+<li>Scores every branch with simple metrics: GINI (inequality), civic trust, annual emissions, resilience.</li>
+<li>Provides a dashboard to compare branches, scrub through timelines, and read AI summaries explaining each snapshot.</li>
+</ul>
+<h2>Getting started</h2>
+<ol>
+<li>Clone the repo.</li>
+<li>Run <code>python3 simulate.py scenario.yaml --output runs/baseline.json</code>.</li>
+<li>Go to <code>dashboard/</code> and run <code>npm install</code> then <code>npm run dev</code> (<a href="http://localhost:3000">http://localhost:3000</a>).</li>
+</ol>
+<h2>Environment variables</h2>
+<p>Set the following in <code>dashboard/.env.local</code> to enable AI summaries:</p>
+<pre><code>OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+</code></pre>
+<h2>Need help?</h2>
+<p>Open an issue on GitHub or reach out through the repo discussions tab.</p>
+
