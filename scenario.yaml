@@ -1,0 +1,20 @@
+name: "baseline-vs-civic-dividend"
+start_year: 2026
+horizon_years: 10
+branch_factors:
+  - lever: civic_dividend_rate
+    options: [0.02, 0.05, 0.1]
+  - lever: ai_charter
+    options: [false, true]
+  - lever: climate_capex_share
+    options: [0.15, 0.25]
+stochastic_events:
+  - name: supply_chain_shock
+    probability_per_year: 0.1
+  - name: extreme_heat
+    probability_per_year: 0.2
+metrics:
+  - gini
+  - civic_trust
+  - annual_emissions
+  - resilience_score
