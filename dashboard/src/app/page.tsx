@@ -250,15 +250,46 @@ function MetricCard({ label, value, explanation }: { label: string; value: strin
 function SummaryBlock({ text }: { text: string }) {
   const lines = text.split("\n");
 
-  type Section = "summary" | "actions" | "impact" | "ai" | "next" | null;
+  type SectionKey =
+    | "summary"
+    | "actions"
+    | "impact"
+    | "ai"
+    | "food"
+    | "health"
+    | "materials"
+    | "quantum"
+    | "civic"
+    | "next"
+    | null;
 
   const summaryParagraphs: string[] = [];
-  const actions: string[] = [];
-  const impact: string[] = [];
-  const aiInfluence: string[] = [];
-  const nextSteps: string[] = [];
+  const bullets: Record<Exclude<SectionKey, "summary" | null>, string[]> = {
+    actions: [],
+    impact: [],
+    ai: [],
+    food: [],
+    health: [],
+    materials: [],
+    quantum: [],
+    civic: [],
+    next: [],
+  };
 
-  let section: Section = null;
+  const headingMap: Record<string, SectionKey> = {
+    summary: "summary",
+    actions: "actions",
+    impact: "impact",
+    "ai influence": "ai",
+    "food & biosystems": "food",
+    "medicine & healthspan": "health",
+    "materials & infrastructure": "materials",
+    "quantum & compute": "quantum",
+    "civic life & culture": "civic",
+    "next steps": "next",
+  };
+
+  let section: SectionKey = null;
   let summaryBuffer: string[] = [];
 
   const flushSummary = () => {
@@ -268,40 +299,38 @@ function SummaryBlock({ text }: { text: string }) {
     }
   };
 
-  const appendBullet = (arr: string[], line: string) => {
+  const appendBullet = (key: Exclude<SectionKey, "summary" | null>) => (line: string) => {
+    const target = bullets[key];
     if (line.startsWith("- ")) {
-      arr.push(line.replace(/^\-\s*/, ""));
-    } else if (arr.length > 0) {
-      arr[arr.length - 1] = `${arr[arr.length - 1]} ${line}`;
+      target.push(line.replace(/^\-\s*/, ""));
+    } else if (target.length > 0) {
+      target[target.length - 1] = `${target[target.length - 1]} ${line}`;
     }
   };
 
+  const bulletAppenders = {
+    actions: appendBullet("actions"),
+    impact: appendBullet("impact"),
+    ai: appendBullet("ai"),
+    food: appendBullet("food"),
+    health: appendBullet("health"),
+    materials: appendBullet("materials"),
+    quantum: appendBullet("quantum"),
+    civic: appendBullet("civic"),
+    next: appendBullet("next"),
+  } as const;
+
   for (const raw of lines) {
     const trimmed = raw.trim();
-    if (/^##\s+summary/i.test(trimmed)) {
-      flushSummary();
-      section = "summary";
-      continue;
-    }
-    if (/^##\s+actions/i.test(trimmed)) {
-      flushSummary();
-      section = "actions";
-      continue;
-    }
-    if (/^##\s+impact/i.test(trimmed)) {
-      flushSummary();
-      section = "impact";
-      continue;
-    }
-    if (/^##\s+ai influence/i.test(trimmed)) {
-      flushSummary();
-      section = "ai";
-      continue;
-    }
-    if (/^##\s+next steps/i.test(trimmed)) {
-      flushSummary();
-      section = "next";
-      continue;
+    const headingMatch = trimmed.match(/^##\s+(.+)/i);
+    if (headingMatch) {
+      const normalized = headingMatch[1].trim().toLowerCase();
+      const mapped = headingMap[normalized];
+      if (mapped) {
+        flushSummary();
+        section = mapped;
+        continue;
+      }
     }
 
     if (!trimmed) {
@@ -313,14 +342,11 @@ function SummaryBlock({ text }: { text: string }) {
 
     if (section === "summary") {
       summaryBuffer.push(trimmed);
-    } else if (section === "actions") {
-      appendBullet(actions, trimmed);
-    } else if (section === "impact") {
-      appendBullet(impact, trimmed);
-    } else if (section === "ai") {
-      appendBullet(aiInfluence, trimmed);
-    } else if (section === "next") {
-      appendBullet(nextSteps, trimmed);
+      continue;
+    }
+
+    if (section && section !== "summary") {
+      bulletAppenders[section](trimmed);
     }
   }
 
@@ -334,6 +360,18 @@ function SummaryBlock({ text }: { text: string }) {
     </ul>
   );
 
+  const sectionOrder: { key: Exclude<SectionKey, "summary" | null>; label: string; accent?: string }[] = [
+    { key: "actions", label: "Actions taken" },
+    { key: "impact", label: "Impact", accent: "border-white/5" },
+    { key: "ai", label: "AI influence", accent: "border-emerald-400/30" },
+    { key: "food", label: "Food & biosystems", accent: "border-lime-400/30" },
+    { key: "health", label: "Medicine & healthspan", accent: "border-rose-300/30" },
+    { key: "materials", label: "Materials & infrastructure", accent: "border-cyan-300/30" },
+    { key: "quantum", label: "Quantum & compute", accent: "border-violet-300/30" },
+    { key: "civic", label: "Civic life & culture", accent: "border-amber-300/30" },
+    { key: "next", label: "Next steps", accent: "border-sky-500/30" },
+  ];
+
   return (
     <div className="space-y-5">
       {summaryParagraphs.length > 0 && (
@@ -343,30 +381,19 @@ function SummaryBlock({ text }: { text: string }) {
           ))}
         </div>
       )}
-      {actions.length > 0 && (
-        <div>
-          <p className="text-xs uppercase tracking-widest text-slate-400">Actions taken</p>
-          {renderBullets(actions)}
-        </div>
-      )}
-      {impact.length > 0 && (
-        <div className="rounded-lg border border-white/5 bg-slate-900/60 p-3">
-          <p className="text-xs uppercase tracking-widest text-slate-400">Impact</p>
-          {renderBullets(impact)}
-        </div>
-      )}
-      {aiInfluence.length > 0 && (
-        <div className="rounded-lg border border-emerald-400/30 bg-slate-900/60 p-3">
-          <p className="text-xs uppercase tracking-widest text-slate-400">AI influence</p>
-          {renderBullets(aiInfluence)}
-        </div>
-      )}
-      {nextSteps.length > 0 && (
-        <div className="rounded-lg border border-sky-500/30 bg-slate-900/60 p-3">
-          <p className="text-xs uppercase tracking-widest text-slate-400">Next steps</p>
-          {renderBullets(nextSteps)}
-        </div>
-      )}
+      {sectionOrder.map(({ key, label, accent }) => {
+        const items = bullets[key];
+        if (!items || items.length === 0) return null;
+        const containerClass = accent
+          ? `rounded-lg border ${accent} bg-slate-900/60 p-3`
+          : undefined;
+        return (
+          <div key={key} className={containerClass}>
+            <p className="text-xs uppercase tracking-widest text-slate-400">{label}</p>
+            {renderBullets(items)}
+          </div>
+        );
+      })}
     </div>
   );
 }

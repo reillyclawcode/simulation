@@ -36,6 +36,26 @@ Paragraph 2 continuing the story, highlighting tensions or opportunities, again 
 - Bullet 1 (2-3 sentences) explaining how the AI influence score (${ai_influence}) affects daily life, including guardrails or risks.
 - Bullet 2 ...
 
+## Food & Biosystems
+- Bullet 1 (2-3 sentences) covering agrifood, nutrition security, or ecosystem resilience, tying to metrics or second-order effects.
+- Bullet 2 ...
+
+## Medicine & Healthspan
+- Bullet 1 (2-3 sentences) about medical/bio advances (longevity, therapeutics, diagnostics) shifting population structure or trust.
+- Bullet 2 ...
+
+## Materials & Infrastructure
+- Bullet 1 (2-3 sentences) about advanced materials, energy storage, or urban systems affecting emissions/resilience/productivity.
+- Bullet 2 ...
+
+## Quantum & Compute
+- Bullet 1 (2-3 sentences) on quantum breakthroughs, compute policy, or edge AI impacting governance/economy.
+- Bullet 2 ...
+
+## Civic Life & Culture
+- Bullet 1 (2-3 sentences) describing social cohesion, participatory tools, cultural reactions to the above trends.
+- Bullet 2 ...
+
 ## Next Steps
 - Bullet 1 (2-3 sentences) recommending a move tied to the metric under the most stress or with spare capacity, citing the metric value.
 - Bullet 2 ...
@@ -46,14 +66,11 @@ Use the metrics below to ground every paragraph/bullet with concrete numbers or 
 - Annual emissions: ${emissions}
 - Resilience: ${resilience}
 - AI influence: ${ai_influence}
-Domain context requirements:
-- Weave in at least two frontier domains per summary (pick from: medicine/bio, advanced materials/manufacturing, quantum/compute, agrifood, space/geoengineering, social/civic tech).
-- Describe how those domains plausibly influence or respond to the metrics (e.g., longevity therapies shifting population structure, quantum labs stressing governance).
 Rules:
 1. Summary must read like a short report (no numbered lists) and include sensory/contextual cues.
 2. Every bullet must mention at least one plausible driver/cause and reference the relevant metric value.
 3. Keep the tone human and observational—vary sentence structure.
-4. Do not reuse wording between sections; vary which domains you spotlight from call to call.
+4. Do not reuse wording between sections; vary which domains you spotlight and keep language uncanned.
 5. Next Steps must explicitly reference the metric value it aims to improve or protect (e.g., "Civic trust is 0.42, so...").`;
 
   try {
