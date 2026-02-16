@@ -27,14 +27,14 @@ python3 ai_override.py runs/baseline.json --output runs/ai_override.json --horiz
 This script reads the deterministic `runs/baseline.json`, prompts the OpenAI Responses API with a JSON schema, and writes `runs/ai_override.json` (ignored by git). Set `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`) in your shell before running.
 
 ## Narrative dashboard (AI summaries)
-The dashboard now renders five AI-authored sections for any year you scrub to:
-- **Summary** – two paragraphs painting the lived reality at that timestamp.
-- **Actions** – bullets explaining which levers were pulled and why.
-- **Impact** – bullets tying those moves back to GINI, trust, emissions, resilience, and AI influence values.
-- **AI influence** – bullets narrating how automation/copilots are affecting daily life and where guardrails are needed.
-- **Next steps** – metric-referenced recommendations for improving or protecting the trajectory.
+Every timeline scrub now pulls a markdown-formatted report from the `/api/summarize` endpoint. The prompt enforces the following layout so the UI can render readable sections:
+- `## Summary` – two prose paragraphs describing the lived reality (infrastructure, mood, tensions) with metrics woven into the narrative.
+- `## Actions` – 2-3 multi-sentence bullets unpacking which levers were pulled and the signals that drove those decisions.
+- `## Impact` – bullets tying actions to concrete metric shifts (GINI, civic trust, emissions, resilience, AI influence) with the numbers cited inline.
+- `## AI Influence` – bullets explaining how the current AI influence score is touching daily life, including risks/guardrails.
+- `## Next Steps` – bullets recommending the next move, each referencing the stressed metric value (e.g., “Civic trust is 0.42, so…”).
 
-Run the UI locally with `npm run dev` (see below) and set `OPENAI_API_KEY` so `/api/summarize` can call the Responses API. Each request stays under 5 seconds thanks to schema-constrained prompts + retries.
+Because the output is markdown, the dashboard parser preserves paragraphs and bullets exactly—no more wall-of-text summaries. Just start `npm run dev`, set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`), and Turbopack will hot-reload as you scrub through the years.
 
 
 ## Requirements
