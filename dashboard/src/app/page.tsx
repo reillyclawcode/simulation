@@ -1,6 +1,43 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+
+interface SnapshotState {
+  year: number;
+  economy: {
+    gini: number;
+    civic_trust: number;
+    ai_influence: number;
+  };
+  climate: {
+    annual_emissions: number;
+    resilience_score: number;
+  };
+}
+
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+
+const computeCompositeScore = (current?: SnapshotState, baseline?: SnapshotState | null) => {
+  if (!current || !baseline) return null;
+  const giniComponent = clamp01(1 - current.economy.gini);
+  const trustComponent = clamp01(current.economy.civic_trust);
+  const resilienceComponent = clamp01(current.climate.resilience_score);
+  const emissionsComponent = clamp01(1 - current.climate.annual_emissions / Math.max(1, baseline.climate.annual_emissions));
+  const aiDelta = Math.abs(current.economy.ai_influence - baseline.economy.ai_influence);
+  const aiComponent = clamp01(1 - aiDelta);
+  const score = (giniComponent + trustComponent + resilienceComponent + emissionsComponent + aiComponent) / 5;
+  return Math.round(score * 100);
+};
+
+const describeDelta = (current: number, baseline: number, goodDirection: "up" | "down" | "stable") => {
+  const delta = current - baseline;
+  const arrow = delta === 0 ? "→" : delta > 0 ? "↑" : "↓";
+  const magnitude = Math.abs(delta).toFixed(3);
+  const formatted = delta === 0 ? "no change" : `${arrow} ${magnitude}`;
+  const trend = goodDirection === "up" ? (delta >= 0 ? "positive" : "watch") : goodDirection === "down" ? (delta <= 0 ? "positive" : "watch") : "neutral";
+  return { formatted, trend };
+};
+
 import {
   ResponsiveContainer,
   LineChart,
@@ -108,8 +145,45 @@ export default function Home() {
   }, [runs, selectedBranch, yearIndex, isScrubbing]);
 
   const selectedRun = runs[selectedBranch];
-  const selectedState = selectedRun?.trajectory?.[yearIndex];
+  const selectedState = selectedRun?.trajectory?.[yearIndex] as SnapshotState | undefined;
   const timelineYears = selectedRun?.trajectory?.map((state: any) => state.year) ?? [];
+  const baselineState = useMemo(() => (runs[0]?.trajectory?.[0] as SnapshotState | undefined) ?? null, [runs]);
+  const compositeScore = useMemo(() => computeCompositeScore(selectedState, baselineState), [selectedState, baselineState]);
+  const deltaCards = useMemo(() => {
+    if (!selectedState || !baselineState) return [];
+    return [
+      {
+        label: "GINI",
+        current: selectedState.economy.gini,
+        baseline: baselineState.economy.gini,
+        ...describeDelta(selectedState.economy.gini, baselineState.economy.gini, "down"),
+      },
+      {
+        label: "Civic trust",
+        current: selectedState.economy.civic_trust,
+        baseline: baselineState.economy.civic_trust,
+        ...describeDelta(selectedState.economy.civic_trust, baselineState.economy.civic_trust, "up"),
+      },
+      {
+        label: "Emissions (Gt)",
+        current: selectedState.climate.annual_emissions,
+        baseline: baselineState.climate.annual_emissions,
+        ...describeDelta(selectedState.climate.annual_emissions, baselineState.climate.annual_emissions, "down"),
+      },
+      {
+        label: "Resilience",
+        current: selectedState.climate.resilience_score,
+        baseline: baselineState.climate.resilience_score,
+        ...describeDelta(selectedState.climate.resilience_score, baselineState.climate.resilience_score, "up"),
+      },
+      {
+        label: "AI influence",
+        current: selectedState.economy.ai_influence,
+        baseline: baselineState.economy.ai_influence,
+        ...describeDelta(selectedState.economy.ai_influence, baselineState.economy.ai_influence, "stable"),
+      },
+    ];
+  }, [selectedState, baselineState]);
 
   const handleYearChange = (value: number) => {
     const trajectory = runs[selectedBranch]?.trajectory ?? [];
@@ -163,6 +237,16 @@ export default function Home() {
           ))}
         </section>
 
+        {baselineState && selectedState && (
+          <section className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+            <TrajectoryScoreCard
+              score={compositeScore}
+              baselineYear={baselineState.year}
+              currentYear={selectedState.year}
+              deltas={deltaCards}
+            />
+          </section>
+        )}
 
         <section className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold text-white">What the AI report covers</h2>
@@ -258,6 +342,46 @@ function MetricCard({ label, value, explanation }: { label: string; value: strin
       <p className="text-xs uppercase tracking-widest text-slate-400">{label}</p>
       <p className="text-2xl font-semibold text-white">{value}</p>
       <p className="text-xs text-slate-400">{explanation}</p>
+    </div>
+  );
+}
+
+function TrajectoryScoreCard({
+  score,
+  baselineYear,
+  currentYear,
+  deltas,
+}: {
+  score: number | null;
+  baselineYear: number;
+  currentYear: number;
+  deltas: { label: string; current: number; baseline: number; formatted: string; trend: string }[];
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.4em] text-sky-300">Trajectory score</p>
+          <p className="text-sm text-slate-400">
+            Composite of inequality, trust, emissions, resilience, and AI influence vs. {baselineYear} baseline.
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-4xl font-semibold text-white">{score !== null ? `${score}` : "--"}</p>
+          <p className="text-xs uppercase tracking-widest text-slate-400">out of 100</p>
+        </div>
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        {deltas.map((delta) => (
+          <div key={delta.label} className="rounded-xl border border-white/10 bg-slate-900/60 p-3">
+            <p className="text-xs uppercase tracking-widest text-slate-400">{delta.label}</p>
+            <p className="text-lg font-semibold text-white">
+              {delta.current.toFixed(3)} <span className="text-sm text-slate-400">vs {delta.baseline.toFixed(3)} ({delta.formatted})</span>
+            </p>
+            <p className="text-xs text-slate-500">{currentYear} vs {baselineYear}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
