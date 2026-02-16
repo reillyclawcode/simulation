@@ -272,6 +272,7 @@ function SummaryBlock({ text }: { text: string }) {
 
   type SectionKey =
     | "summary"
+    | "baseline"
     | "actions"
     | "impact"
     | "ai"
@@ -285,6 +286,7 @@ function SummaryBlock({ text }: { text: string }) {
 
   const summaryParagraphs: string[] = [];
   const bullets: Record<Exclude<SectionKey, "summary" | null>, string[]> = {
+    baseline: [],
     actions: [],
     impact: [],
     ai: [],
@@ -298,6 +300,7 @@ function SummaryBlock({ text }: { text: string }) {
 
   const headingMap: Record<string, SectionKey> = {
     summary: "summary",
+    "baseline comparison": "baseline",
     actions: "actions",
     impact: "impact",
     "ai influence": "ai",
@@ -381,6 +384,7 @@ function SummaryBlock({ text }: { text: string }) {
   );
 
   const sectionOrder: { key: Exclude<SectionKey, "summary" | null>; label: string; accent?: string }[] = [
+    { key: "baseline", label: "Baseline comparison", accent: "border-white/5" },
     { key: "actions", label: "Actions taken" },
     { key: "impact", label: "Impact", accent: "border-white/5" },
     { key: "ai", label: "AI influence", accent: "border-emerald-400/30" },
