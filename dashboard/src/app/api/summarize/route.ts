@@ -24,7 +24,10 @@ Paragraph 1 describing lived experience, infrastructure, mood, notable shifts (n
 
 Paragraph 2 continuing the story, highlighting tensions or opportunities, again weaving in metrics.
 
-Paragraph 3 comparing the current year (${year}) to present-day baselines (2026 levels). Use approximate deltas (e.g., “GINI fell from ~0.38 to 0.32”) so readers can gauge trajectory shifts. End with a sentence that tees up the detailed sections.
+
+## Baseline comparison
+- Bullet 1 (2-3 sentences) comparing the current metrics to 2026 baseline values (use approximations like “GINI from ~0.38 to 0.32”).
+- Bullet 2 ...
 
 ## Actions
 - Bullet 1 (2-3 sentences) describing the intervention, why it was deployed, and signals that prompted it.
