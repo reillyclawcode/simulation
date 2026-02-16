@@ -28,13 +28,13 @@ This script reads the deterministic `runs/baseline.json`, prompts the OpenAI Res
 
 ## Narrative dashboard (AI summaries)
 Every timeline scrub now pulls a markdown-formatted report from the `/api/summarize` endpoint. The prompt enforces the following layout so the UI can render readable sections:
-- `## Summary` – two prose paragraphs describing the lived reality (infrastructure, mood, tensions) with metrics woven into the narrative.
-- `## Actions` – 2-3 multi-sentence bullets unpacking which levers were pulled and the signals that drove those decisions.
-- `## Impact` – bullets tying actions to concrete metric shifts (GINI, civic trust, emissions, resilience, AI influence) with the numbers cited inline.
-- `## AI Influence` – bullets explaining how the current AI influence score is touching daily life, including risks/guardrails.
-- `## Next Steps` – bullets recommending the next move, each referencing the stressed metric value (e.g., “Civic trust is 0.42, so…”).
+- `## Summary` – two prose paragraphs describing lived reality (infrastructure, mood, tensions) with metrics woven into the narrative.
+- `## Baseline comparison` – bullets that contrast the current year vs. 2026 (e.g., “GINI from ~0.38 ➝ 0.32, emissions +3 Gt”).
+- `## Actions` / `## Impact` – 2-3 sentence bullets describing interventions and how they moved the metrics.
+- `## AI Influence`, `## Food & Biosystems`, `## Medicine & Healthspan`, `## Materials & Infrastructure`, `## Quantum & Compute`, `## Civic Life & Culture` – domain-specific callouts tying frontier tech and social responses back to the numbers.
+- `## Next Steps` – metric-referenced recommendations for where to steer the branch next.
 
-Because the output is markdown, the dashboard parser preserves paragraphs and bullets exactly—no more wall-of-text summaries. Just start `npm run dev`, set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`), and Turbopack will hot-reload as you scrub through the years.
+Because the output is markdown, the dashboard parser preserves paragraphs, sections, and bullets exactly—no more wall-of-text summaries. Just start `npm run dev`, set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`), and Turbopack will hot-reload as you scrub through the years.
 
 
 ## Requirements
@@ -57,7 +57,7 @@ npm run dev         # visit http://localhost:3000
 Features:
 - Branch comparison cards plus timeline scrubber (stay anchored to the same percentile when you hop branches).
 - Metric deck that updates in real time (GINI, civic trust, emissions, resilience, AI influence).
-- AI narrative stack: Summary, Actions, Impact, AI Influence, and Next Steps — each rendered as readable paragraphs/bullets.
+- AI narrative stack spanning Summary, Baseline comparison, Actions, Impact, AI Influence, Food, Medicine, Materials, Quantum, Civic Life, and Next Steps.
 - Local OpenAI support (Responses API). Create an `.env.local` with your key/model and keep it out of git.
 
 ## Docs site
