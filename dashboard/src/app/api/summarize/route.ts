@@ -46,11 +46,14 @@ Use the metrics below to ground every paragraph/bullet with concrete numbers or 
 - Annual emissions: ${emissions}
 - Resilience: ${resilience}
 - AI influence: ${ai_influence}
+Domain context requirements:
+- Weave in at least two frontier domains per summary (pick from: medicine/bio, advanced materials/manufacturing, quantum/compute, agrifood, space/geoengineering, social/civic tech).
+- Describe how those domains plausibly influence or respond to the metrics (e.g., longevity therapies shifting population structure, quantum labs stressing governance).
 Rules:
 1. Summary must read like a short report (no numbered lists) and include sensory/contextual cues.
 2. Every bullet must mention at least one plausible driver/cause and reference the relevant metric value.
 3. Keep the tone human and observational—vary sentence structure.
-4. Do not reuse wording between sections.
+4. Do not reuse wording between sections; vary which domains you spotlight from call to call.
 5. Next Steps must explicitly reference the metric value it aims to improve or protect (e.g., "Civic trust is 0.42, so...").`;
 
   try {
