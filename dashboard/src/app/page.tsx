@@ -331,7 +331,8 @@ function SummaryBlock({ text }: { text: string }) {
     }
   };
 
-  const bulletAppenders = {
+  const bulletAppenders: Record<Exclude<SectionKey, "summary" | null>, (line: string) => void> = {
+    baseline: appendBullet("baseline"),
     actions: appendBullet("actions"),
     impact: appendBullet("impact"),
     ai: appendBullet("ai"),
@@ -341,7 +342,7 @@ function SummaryBlock({ text }: { text: string }) {
     quantum: appendBullet("quantum"),
     civic: appendBullet("civic"),
     next: appendBullet("next"),
-  } as const;
+  };
 
   for (const raw of lines) {
     const trimmed = raw.trim();
