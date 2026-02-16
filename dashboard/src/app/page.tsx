@@ -248,8 +248,7 @@ function MetricCard({ label, value, explanation }: { label: string; value: strin
 
 
 function SummaryBlock({ text }: { text: string }) {
-  const lines = text.split("
-");
+  const lines = text.split("\n");
 
   type Section = "summary" | "actions" | "impact" | "ai" | "next" | null;
 
