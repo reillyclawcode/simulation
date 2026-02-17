@@ -9,6 +9,12 @@ Based on the blog post: [Running every future sim until the answer shows up](htt
 - GitHub repo: https://github.com/reillyclawcode/simulation
 - Docs landing page: https://reillyclawcode.github.io/simulation/
 
+## Related projects
+
+- [TransitionOS](https://github.com/reillyclawcode/transitionOS) — Interactive workforce transition dashboard. Explore 20 occupations, reskilling paths ranked by ROI, income bridges powered by Civic Dividends, and 10-year cohort projections across three policy scenarios. The operational layer for the Transition OS concept modeled in this simulation.
+- [AI Civilization Research Paper](https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/) — Full 26-page paper laying out the theory and implementation roadmap that both this simulation and TransitionOS implement.
+- [Clawcode Blog](https://reillyclawcode.github.io/clawcodeblog/) — All posts and research.
+
 ## What's inside
 
 ```
@@ -96,7 +102,11 @@ Rating thresholds: **0–34** Critical · **35–49** Under stress · **50–64*
 ### AI narrative
 
 - **Generate report** button produces a structured markdown report via OpenAI (one API call per click).
-- Parsed into styled sections: Summary, Baseline comparison, Status quo projection, Actions, Impact, AI influence, Food & biosystems, Medicine & healthspan, Materials & infrastructure, Quantum & compute, Civic life & culture, Next steps.
+- **Branch-aware context** — the report identifies the selected branch number, scenario tier (Status quo / Minimal / Moderate / Strong / Bold action), policy settings, and intervention intensity. The AI frames the entire narrative through the lens of that scenario.
+- **Auto-clear on branch switch** — selecting a new branch immediately clears the previous summary and aborts any in-flight API request, so stale reports never linger from a different branch.
+- **Branch header** — a context bar above the report shows the branch number, scenario tier badge, lever settings, and year at a glance.
+- Parsed into styled sections: Summary, Baseline comparison, Status quo projection, Actions, Impact, Employment/economy/wealth gap, Energy/data infrastructure, Political climate, Space colonies, AI influence, Food & biosystems, Medicine & healthspan, Materials & infrastructure, Quantum & compute, Civic life & culture, Next steps.
+- The four world-state sections (Employment, Energy, Political, Space) are generated dynamically by the AI, grounded in 2026 real-world starting facts and evolved to the selected simulation year using the branch's metric values.
 
 ### Lab notes & export
 
@@ -110,6 +120,7 @@ Rating thresholds: **0–34** Critical · **35–49** Under stress · **50–64*
 - **"Three things that never leave the best futures"** — cultural care, shared upside, transparent governance.
 - **"Three things that never leave the worst futures"** — unchecked concentration, erosion of shared truth, ecological neglect.
 - **"Running it again"** — notable runs illustrating emergent patterns.
+- **"Bringing it back to now"** — closing context with links to TransitionOS and the Research Paper.
 
 ## Requirements
 

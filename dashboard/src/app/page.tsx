@@ -105,6 +105,7 @@ const NOTABLE_RUNS = [
   { run: "Run 12", desc: "Frontier AI is proprietary, dividends aren\u2019t shared", result: "Polarization spikes." },
 ];
 
+
 const METRIC_COLORS: Record<string, string> = { gini: "#f59e0b", civic_trust: "#10b981", annual_emissions: "#f43f5e", resilience_score: "#06b6d4", ai_influence: "#8b5cf6" };
 const METRIC_LABELS: Record<string, string> = { gini: "GINI Index", civic_trust: "Civic Trust", annual_emissions: "Emissions (Gt)", resilience_score: "Resilience", ai_influence: "AI Influence" };
 const METRIC_DESCRIPTIONS: Record<string, string> = { gini: "Lower values mean income is more evenly distributed.", civic_trust: "Proxy for willingness to collaborate and accept shared rules.", annual_emissions: "Gigatons of CO\u2082-equivalent released this year.", resilience_score: "System robustness against shocks and disruptions.", ai_influence: "How deeply automation and AI copilots shape daily life." };
@@ -300,11 +301,13 @@ export default function Home() {
     return () => el.removeEventListener("wheel", block);
   }, []);
 
-  /* Clamp year index to new trajectory length when branch changes; preserve position */
+  /* Clamp year index to new trajectory length when branch changes; clear summary */
   useEffect(() => {
     const newTraj = runs[selectedBranch]?.trajectory ?? [];
     setYearIndex((prev) => Math.min(prev, Math.max(0, newTraj.length - 1)));
+    if (summaryControllerRef.current) { summaryControllerRef.current.abort(); summaryControllerRef.current = null; }
     setSummary("");
+    setSummaryLoading(false);
   }, [selectedBranch, runs]);
 
   /* Derived data */
@@ -390,13 +393,18 @@ export default function Home() {
   }, [selectedState, baselineState]);
 
   /* Generate summary */
+  const currentIntensity = selectedRun ? interventionIntensity(selectedRun, runs) : 0;
+  const currentTier = intensityLabel(currentIntensity);
+
   const generateSummary = useCallback(() => {
-    if (!selectedState) return;
+    if (!selectedState || !selectedRun) return;
     if (summaryControllerRef.current) summaryControllerRef.current.abort();
     const controller = new AbortController();
     summaryControllerRef.current = controller;
     setSummaryLoading(true);
     const inactionSnap = inactionRun?.trajectory[yearIndex] as SnapshotState | undefined;
+    const intensity = interventionIntensity(selectedRun, runs);
+    const tier = intensityLabel(intensity);
     fetch("/api/summarize", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -406,6 +414,10 @@ export default function Home() {
         inaction_gini: inactionSnap?.economy.gini, inaction_civic_trust: inactionSnap?.economy.civic_trust,
         inaction_emissions: inactionSnap?.climate.annual_emissions, inaction_resilience: inactionSnap?.climate.resilience_score,
         inaction_ai_influence: inactionSnap?.economy.ai_influence,
+        branch_number: selectedBranch + 1,
+        branch_label: branchLabel(selectedRun),
+        branch_tier: tier.label,
+        branch_intensity: Math.round(intensity * 100),
       }),
       signal: controller.signal,
     })
@@ -413,7 +425,7 @@ export default function Home() {
       .then((data) => setSummary(data.summary || ""))
       .catch((err) => { if (err.name !== "AbortError") setSummary("Summary unavailable."); })
       .finally(() => setSummaryLoading(false));
-  }, [selectedState, inactionRun, yearIndex]);
+  }, [selectedState, selectedRun, inactionRun, yearIndex, selectedBranch, runs]);
 
   const handleYearChange = (value: number) => {
     const max = Math.max(0, trajectory.length - 1);
@@ -580,6 +592,8 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-3">
             <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-5 py-2.5 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/20 transition hover:bg-sky-500/20">Read the blog post &rarr;</a>
             <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-300 ring-1 ring-white/10 transition hover:bg-white/10">GitHub repo</a>
+            <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/20 transition hover:bg-emerald-500/20">{"\u{1F6E0}\uFE0F"} TransitionOS Dashboard</a>
+            <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-300 ring-1 ring-violet-500/20 transition hover:bg-violet-500/20">{"\u{1F4DC}"} Research Paper</a>
           </div>
           <div className="flex flex-wrap gap-8 pt-2 text-sm">
             <Stat value="12" label="branches" /><Stat value="50" label="year horizon" /><Stat value="5" label="structural metrics" /><Stat value="2026" label="start year" />
@@ -757,10 +771,20 @@ export default function Home() {
                 </div>
                 {(summaryLoading || summary) && (
                   <div className="mt-4 border-t border-white/5 pt-4">
-                    {summaryLoading && !summary && <div className="flex items-center gap-3 text-sm text-slate-400"><span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />Generating AI report&hellip; this may take 20&ndash;30 seconds.</div>}
+                    {/* Branch context header */}
+                    {selectedRun && (
+                      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                        <span className="text-xs font-bold text-white">Branch {selectedBranch + 1}</span>
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold ring-1 ${currentTier.color} ${currentTier.bg} ${currentTier.ring}`}>{currentTier.label}</span>
+                        <span className="text-[10px] text-slate-500">{branchLabel(selectedRun)}</span>
+                        <span className="text-[10px] text-slate-500 ml-auto">Year {selectedState?.year ?? "\u2014"}</span>
+                      </div>
+                    )}
+                    {summaryLoading && !summary && <div className="flex items-center gap-3 text-sm text-slate-400"><span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />Generating AI report for Branch {selectedBranch + 1} ({currentTier.label})&hellip; this may take 20&ndash;30 seconds.</div>}
                     {summary && <SummaryBlock text={summary} />}
                   </div>
                 )}
+
               </div>
 
               {/* Metric snapshot cards */}
@@ -865,12 +889,22 @@ export default function Home() {
               <h2 className="text-xl font-semibold text-white">Bringing it back to now</h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">The simulation is just a story unless we translate it into the present. Treat every real-world deployment as another iteration, with better logging and shorter feedback loops. Build the tooling that keeps branching paths legible&mdash;Transition OS, civic ledgers, public VPP dashboards. Document the playbooks so others can fork them.</p>
               <p className="mt-3 text-sm leading-relaxed text-slate-300">We don&rsquo;t need infinite compute to reveal the future. We just need to notice the patterns that survive across every simulation, then act on them before the next branch begins.</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 transition hover:bg-emerald-500/10">
+                  <span className="text-2xl">{"\u{1F6E0}\uFE0F"}</span>
+                  <div><p className="text-sm font-semibold text-emerald-300">TransitionOS Dashboard</p><p className="text-xs text-slate-400">Workforce transitions, reskilling paths, and income bridge calculator</p></div>
+                </a>
+                <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 transition hover:bg-violet-500/10">
+                  <span className="text-2xl">{"\u{1F4DC}"}</span>
+                  <div><p className="text-sm font-semibold text-violet-300">AI Civilization Research Paper</p><p className="text-xs text-slate-400">The full theory, implementation roadmap, and policy framework</p></div>
+                </a>
+              </div>
             </section>
           </>
         )}
 
         <footer className="mt-16 border-t border-white/5 pt-8 text-center text-xs text-slate-600">
-          &copy; 2026 Simulation Toolkit &middot; <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog post</a> &middot; <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">GitHub</a>
+          &copy; 2026 Simulation Toolkit &middot; <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog post</a> &middot; <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">GitHub</a> &middot; <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">TransitionOS</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Research Paper</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog</a>
         </footer>
       </div>
     </div>
@@ -989,16 +1023,17 @@ function DivergenceSummary({ selectedState, inactionState, year, contrastLabel =
   );
 }
 
+
 /* ------------------------------------------------------------------ */
 /*  Summary block                                                      */
 /* ------------------------------------------------------------------ */
 
 function SummaryBlock({ text }: { text: string }) {
   const lines = text.split("\n");
-  type SectionKey = "summary" | "baseline" | "statusquo" | "actions" | "impact" | "ai" | "food" | "health" | "materials" | "quantum" | "civic" | "next" | null;
+  type SectionKey = "summary" | "baseline" | "statusquo" | "actions" | "impact" | "ai" | "food" | "health" | "materials" | "quantum" | "civic" | "employment" | "energy" | "political" | "space" | "next" | null;
   const summaryParagraphs: string[] = [];
-  const bullets: Record<Exclude<SectionKey, "summary" | null>, string[]> = { baseline: [], statusquo: [], actions: [], impact: [], ai: [], food: [], health: [], materials: [], quantum: [], civic: [], next: [] };
-  const headingMap: Record<string, SectionKey> = { summary: "summary", "baseline comparison": "baseline", "status quo projection": "statusquo", "if we don't act": "statusquo", "without action": "statusquo", actions: "actions", impact: "impact", "ai influence": "ai", "food & biosystems": "food", "medicine & healthspan": "health", "materials & infrastructure": "materials", "quantum & compute": "quantum", "civic life & culture": "civic", "next steps": "next" };
+  const bullets: Record<Exclude<SectionKey, "summary" | null>, string[]> = { baseline: [], statusquo: [], actions: [], impact: [], ai: [], food: [], health: [], materials: [], quantum: [], civic: [], employment: [], energy: [], political: [], space: [], next: [] };
+  const headingMap: Record<string, SectionKey> = { summary: "summary", "baseline comparison": "baseline", "status quo projection": "statusquo", "if we don't act": "statusquo", "without action": "statusquo", actions: "actions", impact: "impact", "ai influence": "ai", "food & biosystems": "food", "medicine & healthspan": "health", "materials & infrastructure": "materials", "quantum & compute": "quantum", "civic life & culture": "civic", "employment, economy & the wealth gap": "employment", "employment & economy": "employment", "energy & data infrastructure": "energy", "energy sources & data infrastructure": "energy", "energy & compute": "energy", "the political climate": "political", "political climate": "political", "governance": "political", "space colonies": "space", "space colonies: moon, mars & beyond": "space", "off-world": "space", "next steps": "next" };
   let section: SectionKey = null; let buf: string[] = [];
   const flush = () => { if (buf.length) { summaryParagraphs.push(buf.join(" ").trim()); buf = []; } };
   for (const raw of lines) {
@@ -1015,6 +1050,10 @@ function SummaryBlock({ text }: { text: string }) {
     { key: "statusquo", label: "Status quo projection \u2014 if we don\u2019t act", accent: "border-red-500/20" },
     { key: "actions", label: "Actions taken", accent: "border-sky-500/20" },
     { key: "impact", label: "Impact", accent: "border-emerald-500/20" },
+    { key: "employment", label: "Employment, economy & the wealth gap", accent: "border-amber-400/20" },
+    { key: "energy", label: "Energy sources & data infrastructure", accent: "border-sky-400/20" },
+    { key: "political", label: "The political climate", accent: "border-violet-400/20" },
+    { key: "space", label: "Space colonies: Moon, Mars & beyond", accent: "border-emerald-400/20" },
     { key: "ai", label: "AI influence", accent: "border-violet-500/20" },
     { key: "food", label: "Food & biosystems", accent: "border-lime-400/20" },
     { key: "health", label: "Medicine & healthspan", accent: "border-rose-400/20" },
