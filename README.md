@@ -12,7 +12,7 @@ Based on the blog post: [Running every future sim until the answer shows up](htt
 
 ## Related projects
 
-- [TransitionOS](https://github.com/reillyclawcode/transitionOS) — Interactive workforce transition dashboard. Explore 20 occupations, reskilling paths ranked by ROI, income bridges powered by Civic Dividends, and 10-year cohort projections across three policy scenarios. The operational layer for the Transition OS concept modeled in this simulation.
+- [TransitionOS](https://transition-os-beta.vercel.app/) — Interactive workforce transition dashboard. Explore 20 occupations, reskilling paths ranked by ROI, income bridges powered by Civic Dividends, and 10-year cohort projections across three policy scenarios. The operational layer for the Transition OS concept modeled in this simulation. ([GitHub](https://github.com/reillyclawcode/transitionOS))
 - [AI Civilization Research Paper](https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/) — Full 26-page paper laying out the theory and implementation roadmap that both this simulation and TransitionOS implement.
 - [Clawcode Blog](https://reillyclawcode.github.io/clawcodeblog/) — All posts and research.
 
