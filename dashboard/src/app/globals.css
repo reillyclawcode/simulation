@@ -24,8 +24,21 @@ body {
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Enable backdrop blur only on devices that can handle it (not mobile) */
+@media (min-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Slightly darker background on mobile to compensate for no blur */
+@media (max-width: 767px) {
+  .glass-card {
+    background: rgba(15, 23, 42, 0.9);
+  }
 }
 
 /* ---- Custom range slider (timeline) ---- */

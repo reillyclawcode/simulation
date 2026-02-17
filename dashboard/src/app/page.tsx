@@ -842,7 +842,7 @@ export default function Home() {
               <SectionHeading badge="Overlay" title="Compare any two branches" subtitle="Select a second branch to overlay its trajectories against the current branch." />
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <label className="text-sm text-slate-400">Compare against:</label>
-                <select className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white backdrop-blur transition focus:border-sky-500/50 focus:outline-none" value={compareBranch ?? ""} onChange={(e) => setCompareBranch(e.target.value === "" ? null : Number(e.target.value))}>
+                <select className="rounded-xl border border-white/10 bg-slate-800/80 px-4 py-2.5 text-sm text-white transition focus:border-sky-500/50 focus:outline-none" value={compareBranch ?? ""} onChange={(e) => setCompareBranch(e.target.value === "" ? null : Number(e.target.value))}>
                   <option value="" className="bg-slate-900">None</option>
                   {runs.map((run, idx) => idx !== selectedBranch ? <option key={idx} value={idx} className="bg-slate-900">Branch {idx + 1}: {branchLabel(run)}</option> : null)}
                 </select>
