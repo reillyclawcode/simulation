@@ -6,6 +6,7 @@ Based on the blog post: [Running every future sim until the answer shows up](htt
 
 ## Live links
 
+- **Live dashboard: https://simulation-brown.vercel.app/**
 - GitHub repo: https://github.com/reillyclawcode/simulation
 - Docs landing page: https://reillyclawcode.github.io/simulation/
 
