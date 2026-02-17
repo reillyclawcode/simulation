@@ -592,8 +592,10 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-3">
             <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-5 py-2.5 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/20 transition hover:bg-sky-500/20">Read the blog post &rarr;</a>
             <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-300 ring-1 ring-white/10 transition hover:bg-white/10">GitHub repo</a>
-            <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/20 transition hover:bg-emerald-500/20">{"\u{1F6E0}\uFE0F"} TransitionOS Dashboard</a>
-            <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-300 ring-1 ring-violet-500/20 transition hover:bg-violet-500/20">{"\u{1F4DC}"} Research Paper</a>
+            <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/20 transition hover:bg-emerald-500/20">{"\u{1F6E0}\uFE0F"} TransitionOS</a>
+            <a href="https://civilization-os-3nlf.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-500/20 transition hover:bg-amber-500/20">{"\u{1F30D}"} CivilizationOS</a>
+            <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-300 ring-1 ring-violet-500/20 transition hover:bg-violet-500/20">{"\u{1F3DB}\uFE0F"} GovernanceOS</a>
+            <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-5 py-2.5 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/20 transition hover:bg-sky-500/20">{"\u{1F4DC}"} Research Paper</a>
           </div>
           <div className="flex flex-wrap gap-8 pt-2 text-sm">
             <Stat value="12" label="branches" /><Stat value="50" label="year horizon" /><Stat value="5" label="structural metrics" /><Stat value="2026" label="start year" />
@@ -890,13 +892,21 @@ export default function Home() {
               <p className="mt-3 text-sm leading-relaxed text-slate-400">The simulation is just a story unless we translate it into the present. Treat every real-world deployment as another iteration, with better logging and shorter feedback loops. Build the tooling that keeps branching paths legible&mdash;Transition OS, civic ledgers, public VPP dashboards. Document the playbooks so others can fork them.</p>
               <p className="mt-3 text-sm leading-relaxed text-slate-300">We don&rsquo;t need infinite compute to reveal the future. We just need to notice the patterns that survive across every simulation, then act on them before the next branch begins.</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 transition hover:bg-emerald-500/10">
+                <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 transition hover:bg-emerald-500/10">
                   <span className="text-2xl">{"\u{1F6E0}\uFE0F"}</span>
                   <div><p className="text-sm font-semibold text-emerald-300">TransitionOS Dashboard</p><p className="text-xs text-slate-400">Workforce transitions, reskilling paths, and income bridge calculator</p></div>
                 </a>
-                <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 transition hover:bg-violet-500/10">
+                <a href="https://civilization-os-3nlf.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 transition hover:bg-amber-500/10">
+                  <span className="text-2xl">{"\u{1F30D}"}</span>
+                  <div><p className="text-sm font-semibold text-amber-300">CivilizationOS Dashboard</p><p className="text-xs text-slate-400">Resident journeys, civic dividends, benefits, and KPI projections</p></div>
+                </a>
+                <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 transition hover:bg-violet-500/10">
+                  <span className="text-2xl">{"\u{1F3DB}\uFE0F"}</span>
+                  <div><p className="text-sm font-semibold text-violet-300">GovernanceOS Dashboard</p><p className="text-xs text-slate-400">Charter frameworks, citizen assemblies, audit tracking, and participation</p></div>
+                </a>
+                <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 transition hover:bg-sky-500/10">
                   <span className="text-2xl">{"\u{1F4DC}"}</span>
-                  <div><p className="text-sm font-semibold text-violet-300">AI Civilization Research Paper</p><p className="text-xs text-slate-400">The full theory, implementation roadmap, and policy framework</p></div>
+                  <div><p className="text-sm font-semibold text-sky-300">AI Civilization Research Paper</p><p className="text-xs text-slate-400">The full theory, implementation roadmap, and policy framework</p></div>
                 </a>
               </div>
             </section>
@@ -904,7 +914,7 @@ export default function Home() {
         )}
 
         <footer className="mt-16 border-t border-white/5 pt-8 text-center text-xs text-slate-600">
-          &copy; 2026 Simulation Toolkit &middot; <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog post</a> &middot; <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">GitHub</a> &middot; <a href="https://github.com/reillyclawcode/transitionOS" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">TransitionOS</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Research Paper</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog</a>
+          &copy; 2026 Simulation Toolkit &middot; <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog post</a> &middot; <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">GitHub</a> &middot; <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">TransitionOS</a> &middot; <a href="https://civilization-os-3nlf.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">CivilizationOS</a> &middot; <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">GovernanceOS</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Research Paper</a> &middot; <a href="https://reillyclawcode.github.io/clawcodeblog/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-300">Blog</a>
         </footer>
       </div>
     </div>
