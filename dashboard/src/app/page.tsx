@@ -603,6 +603,53 @@ export default function Home() {
           </div>
         </header>
 
+        {/* ── TODAY'S CIVILIZATION SCORE ── */}
+        {(() => {
+          const baselineScore = baselineState ? computeCompositeScore(baselineState as SnapshotState, baselineState) : null;
+          const bestScore = maxActionRun ? computeCompositeScore(maxActionRun.trajectory[maxActionRun.trajectory.length - 1], baselineState) : null;
+          const worstScore = inactionRun ? computeCompositeScore(inactionRun.trajectory[inactionRun.trajectory.length - 1], baselineState) : null;
+          const letterGrade = (sc: number) => sc >= 93 ? "A" : sc >= 85 ? "A-" : sc >= 80 ? "B+" : sc >= 73 ? "B" : sc >= 68 ? "B-" : sc >= 63 ? "C+" : sc >= 58 ? "C" : sc >= 53 ? "C-" : sc >= 48 ? "D+" : sc >= 43 ? "D" : sc >= 38 ? "D-" : "F";
+          const gColor = (sc: number) => sc >= 73 ? "#10b981" : sc >= 53 ? "#f59e0b" : sc >= 38 ? "#fb923c" : "#f43f5e";
+          if (!baselineScore) return null;
+          return (
+            <section className="mt-12">
+              <SectionHeading badge="Baseline" title="Today's Civilization Score" subtitle="Where we stand at the start of the simulation (2026 baseline). This is the starting point every branch inherits." />
+              <div className="mt-6 glass-card rounded-2xl p-6" style={{ borderTop: `3px solid ${gColor(baselineScore.total)}` }}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
+                  <div className="relative w-28 h-28 flex-shrink-0 mx-auto sm:mx-0">
+                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="42" fill="none" stroke={gColor(baselineScore.total)} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${baselineScore.total * 2.64} 264`} />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold" style={{ color: gColor(baselineScore.total), fontFamily: "'Space Grotesk',sans-serif" }}>{letterGrade(baselineScore.total)}</span>
+                      <span className="text-[10px] text-slate-500">{baselineScore.total}/100</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-sm font-semibold text-white mb-1">{baselineScore.rating}</p>
+                    <p className="text-xs text-slate-400 mb-3">Composite score across equality, civic trust, resilience, decarbonization, and AI governance. This is the inherited starting position for all 12 simulated branches.</p>
+                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                      {bestScore && <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: `${gColor(bestScore.total)}22`, color: gColor(bestScore.total), border: `1px solid ${gColor(bestScore.total)}44` }}>Bold action 2076: {letterGrade(bestScore.total)} ({bestScore.total}/100)</span>}
+                      {worstScore && <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: `${gColor(worstScore.total)}22`, color: gColor(worstScore.total), border: `1px solid ${gColor(worstScore.total)}44` }}>Status quo 2076: {letterGrade(worstScore.total)} ({worstScore.total}/100)</span>}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  {baselineScore.components.map(c => (
+                    <div key={c.label} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-center">
+                      <p className="text-xs font-semibold text-white">{c.label}</p>
+                      <p className="text-lg font-bold mt-1" style={{ color: c.color, fontFamily: "'Space Grotesk',sans-serif" }}>{letterGrade(c.score)}</p>
+                      <p className="text-[10px] text-slate-500">{c.score}/100</p>
+                      <p className="text-[9px] mt-1 text-slate-500 leading-tight">{c.explanation.split(" \u2014 ")[1] || c.explanation}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
         {/* INSIGHTS */}
         <section className="mt-16">
           <SectionHeading badge="Insights" title="What the simulations teach immediately" subtitle="Five patterns that emerge across every run, no matter how the dice land." />
