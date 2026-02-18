@@ -572,37 +572,31 @@ export default function Home() {
         </div>
       )}
 
-      <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-
-        {/* ============================================================ */}
-        {/*  HERO                                                         */}
-        {/* ============================================================ */}
-        <header className="space-y-6 border-b border-white/10 pb-8">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-[0.5em] text-sky-400">Future Simulation Toolkit</p>
-            <button onClick={() => setLabNotesOpen(true)} className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-medium text-slate-300 ring-1 ring-white/10 hover:bg-white/10 transition">
-              Lab Notes {labNotes.length > 0 && <span className="rounded-full bg-sky-500/20 px-1.5 py-0.5 text-[10px] text-sky-300">{labNotes.length}</span>}
-            </button>
-          </div>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl">Running every future sim until the answer shows up</h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-slate-400">
-            Imagine we spin up an infinite stack of simulations beginning right now. Each sim branches on every plausible decision we could make from this moment forward. What emerges if we keep iterating until{" "}
-            <span className="text-white">&ldquo;all that we&rsquo;ve been seeking&rdquo;</span> finally shows itself?
+      {/* ── HEADER ── */}
+      <header className="pt-10 pb-8 px-4" style={{ background: "linear-gradient(180deg,rgba(56,189,248,0.06) 0%,transparent 100%)" }}>
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs uppercase tracking-[0.4em] mb-2" style={{ color: "var(--sky)" }}>Simulation</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ fontFamily: "'Space Grotesk',sans-serif" }}>Future Simulation Toolkit</h1>
+          <p className="text-sm max-w-2xl" style={{ color: "var(--text-muted)" }}>
+            12 branching futures across a 50-year horizon. Each branch varies policy levers &mdash; civic dividends, governance charters, climate investment &mdash;
+            and tracks five structural metrics to reveal which choices matter most.
           </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-5 py-2.5 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/20 transition hover:bg-sky-500/20">Read the blog post &rarr;</a>
-            <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-300 ring-1 ring-white/10 transition hover:bg-white/10">GitHub repo</a>
-            <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/20 transition hover:bg-emerald-500/20">{"\u{1F6E0}\uFE0F"} TransitionOS</a>
-            <a href="https://civilization-os-3nlf.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-500/20 transition hover:bg-amber-500/20">{"\u{1F30D}"} CivilizationOS</a>
-            <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-300 ring-1 ring-violet-500/20 transition hover:bg-violet-500/20">{"\u{1F3DB}\uFE0F"} GovernanceOS</a>
-            <a href="https://climate-os.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-teal-300 ring-1 ring-teal-500/20 transition hover:bg-teal-500/20">{"\u{1F331}"} ClimateOS</a>
-            <a href="https://strategy-os-pearl.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-300 ring-1 ring-amber-500/20 transition hover:bg-amber-500/20">{"\u2699\uFE0F"} StrategyOS</a>
-            <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-5 py-2.5 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/20 transition hover:bg-sky-500/20">{"\u{1F4DC}"} Research Paper</a>
+          <div className="flex flex-wrap gap-3 mt-5">
+            <button onClick={() => setLabNotesOpen(true)} className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(56,189,248,0.12)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>{"\u{1F4DD}"} Lab Notes{labNotes.length > 0 ? ` (${labNotes.length})` : ""}</button>
+            <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(56,189,248,0.12)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>{"\u{1F4DC}"} Blog Post</a>
+            <a href="https://github.com/reillyclawcode/simulation" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(56,189,248,0.12)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>{"\u{1F4BB}"} GitHub</a>
+            <a href="https://climate-os.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(20,184,166,0.12)", color: "#2dd4bf", border: "1px solid rgba(20,184,166,0.3)" }}>{"\u{1F331}"} ClimateOS</a>
+            <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(16,185,129,0.12)", color: "#34d399", border: "1px solid rgba(16,185,129,0.3)" }}>{"\u{1F6E0}\uFE0F"} TransitionOS</a>
+            <a href="https://civilization-os-3nlf.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(245,158,11,0.12)", color: "#fbbf24", border: "1px solid rgba(245,158,11,0.3)" }}>{"\u{1F30D}"} CivilizationOS</a>
+            <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(139,92,246,0.12)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.3)" }}>{"\u{1F3DB}\uFE0F"} GovernanceOS</a>
+            <a href="https://strategy-os-pearl.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(245,158,11,0.12)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }}>{"\u2699\uFE0F"} StrategyOS</a>
+            <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(139,92,246,0.12)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.3)" }}>{"\u{1F4DC}"} Research Paper</a>
+            <a href="https://reillyclawcode.github.io/clawcodeblog/" target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full" style={{ background: "rgba(100,116,139,0.12)", color: "#94a3b8", border: "1px solid rgba(100,116,139,0.3)" }}>{"\u{1F4DD}"} Blog</a>
           </div>
-          <div className="flex flex-wrap gap-8 pt-2 text-sm">
-            <Stat value="12" label="branches" /><Stat value="50" label="year horizon" /><Stat value="5" label="structural metrics" /><Stat value="2026" label="start year" />
-          </div>
-        </header>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-4 mt-8">
 
         {/* ── TODAY'S CIVILIZATION SCORE ── */}
         {(() => {
