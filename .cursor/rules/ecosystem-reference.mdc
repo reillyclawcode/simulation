@@ -1,0 +1,167 @@
+---
+description: Reference for the Civilization Futures ecosystem — all apps, URLs, repos, patterns, and conventions
+alwaysApply: true
+---
+
+# Civilization Futures Ecosystem Reference
+
+## Applications & URLs
+
+| App | Vercel URL | GitHub Repo | Local Path | Accent Color |
+|-----|-----------|-------------|------------|--------------|
+| ClimateOS | https://climate-os.vercel.app/ | reillyclawcode/ClimateOS | `C:\Users\reill\Documents\GitHub\ClimateOS` | Teal `#14b8a6` |
+| TransitionOS | https://transition-os-beta.vercel.app/ | reillyclawcode/transitionOS | `C:\Users\reill\Documents\GitHub\transitionOS\apps\dashboard` | Sky `#38bdf8` |
+| GovernanceOS | https://civilization-os-ashy.vercel.app/ | reillyclawcode/GovernanceOS | `C:\Users\reill\Documents\GitHub\GovernanceOS` | Violet `#8b5cf6` |
+| CivilizationOS | https://civilization-os-3nlf.vercel.app/ | reillyclawcode/CivilizationOS | `C:\Users\reill\Documents\GitHub\CivilizationOS` | Cyan `#06b6d4` |
+| Simulation | https://simulation-brown.vercel.app/ | reillyclawcode/simulation | `C:\Users\reill\Documents\GitHub\simulation` | Rose `#f43f5e` |
+| StrategyOS | https://strategy-os-pearl.vercel.app/ | reillyclawcode/strategyOS | `C:\Users\reill\Documents\GitHub\strategyOS` | Amber `#f59e0b` |
+| Blog | https://reillyclawcode.github.io/clawcodeblog/ | reillyclawcode/clawcodeblog | `C:\Users\reill\Documents\GitHub\clawcodeblog` | N/A |
+
+**CRITICAL**: Never fabricate Vercel URLs. If unsure, ask the user. Previous incorrect URL `simulation-tau-dun.vercel.app` was fabricated and caused cross-ecosystem breakage.
+
+## Tech Stack (All Dashboard Apps)
+
+- **Next.js 14** (App Router, `app/page.tsx`)
+- **React 18.3.1** + TypeScript
+- **Tailwind CSS 3** + PostCSS + Autoprefixer
+- **Recharts 2.12.0** for charts
+- Dark theme with CSS variables, glass-card UI
+- Config files: `package.json`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `next.config.js`
+- Exception: TransitionOS has dashboard nested at `apps/dashboard/`
+
+## Blog (clawcodeblog)
+
+- **Eleventy** static site generator
+- **Nunjucks** `.njk` templates in `src/_includes/layouts/`
+- Posts in `src/posts/` as `.md` with YAML frontmatter
+- Research paper page at `/research/ai-civilization/`
+- Hosted on GitHub Pages
+
+## UI Conventions (All Dashboard Apps)
+
+### Header Pattern
+```
+<header> with linear-gradient background using app accent color
+  - Uppercase tracking-wide label (app name)
+  - Large Space Grotesk title
+  - Subtitle paragraph
+  - Pill-style links to all ecosystem apps + GitHub + Blog
+</header>
+```
+
+### Nav Pattern
+```
+Sticky top-0 z-50 nav with glass blur background
+  Tab buttons with tab-btn / tab-btn-active classes
+```
+
+### Scenario Pattern (Best → Worst)
+All apps use 4 scenarios with interactive toggle:
+- **Aggressive/Best** — green `#10b981`
+- **Moderate** — sky `#38bdf8`
+- **Business as Usual** — amber `#f59e0b`
+- **Worst Case** — rose `#f43f5e`
+
+Each scenario card has: icon, name, description. Active scenario gets `ring-2` + glow.
+
+TransitionOS exception: uses 3 scenarios (Baseline, Transition OS, Full Stack) with colors `#64748b`, `#38bdf8`, `#34d399`.
+
+### Score Panel Pattern
+Every app's Overview tab starts with a "Today's Score" panel:
+- Circular SVG progress ring with letter grade + numeric score
+- Grid of sub-domain cards with grades, trend arrows, notes
+- Domain scores are scenario-aware (update when scenario changes)
+
+### Chart Pattern
+- Recharts `AreaChart` with all scenario lines
+- Active scenario: `strokeWidth={3}`, full opacity
+- Inactive: `strokeWidth={1.5}`, `strokeOpacity={0.35}`
+- Gradient fills with `linearGradient` defs
+- **Each chart gets a scenario-aware descriptive paragraph beneath it**
+- **Each chart section gets a comprehensive summary at the bottom**
+
+### Footer Pattern
+```
+Links to all ecosystem apps with emoji + name
+GitHub link
+Centered, small text
+```
+
+### CSS Variables
+```css
+--bg: #030712; --card-bg: rgba(15,23,42,0.6); --card-border: rgba(51,65,85,0.4);
+--text: #f1f5f9; --text-muted: #94a3b8; --text-faint: #64748b;
+--teal: #14b8a6; --sky: #0ea5e9; --emerald: #10b981; --violet: #8b5cf6;
+--amber: #f59e0b; --rose: #f43f5e; --cyan: #06b6d4;
+```
+
+### Utility Functions (copy across apps)
+```
+letterGrade(score) — A through F
+gColor(score) — green/amber/orange/red
+trendArrow(trend) — ↑/→/↓
+trendColor(trend) — green/amber/red
+fmtK(n) — thousands formatter
+pct(n) — percentage formatter
+```
+
+## Cross-App Link Checklist
+
+When updating any app, ensure these links are correct in: header pills, footer, ecosystem cards, README.
+
+### Adding a NEW App to the Ecosystem (Full Checklist)
+
+1. **Update this rule** — add the new app's Vercel URL, repo, path, and accent color to the table
+2. **Create blog post** — in `clawcodeblog/src/posts/` with YAML frontmatter, hero banner, stat row, ecosystem links banner
+3. **Add links to ALL existing dashboard apps** (header pills + footer):
+   - ClimateOS: `ClimateOS/app/page.tsx` — header link div + footer `<p>` links
+   - TransitionOS: `transitionOS/apps/dashboard/app/page.tsx` — header link div + footer links
+   - GovernanceOS: `GovernanceOS/app/page.tsx` — header link div + footer links
+   - CivilizationOS: `CivilizationOS/app/page.tsx` — header link div + footer links
+   - SimulationOS: `simulation/dashboard/src/app/page.tsx` — header link div + footer `&middot;` chain
+   - StrategyOS: `strategyOS/app/page.tsx` — header link div + footer links
+4. **Update blog infrastructure**:
+   - Blog header nav: `clawcodeblog/src/_includes/layouts/base.njk` — add `header-link--ghost`
+   - Blog homepage quick links: `clawcodeblog/src/index.njk` — add `quick-link-card`
+5. **Update existing blog posts** that have ecosystem link sections:
+   - `2026-02-17-climateos.md` — hero banners for each app
+   - `2026-02-18-ecosystem-scores.md` — hero banners for each dashboard
+   - Any post with an "Explore the ecosystem" section
+6. **Update all READMEs** — the new app's own README + ecosystem table in all other READMEs
+7. **Verify Vercel URL is correct** — NEVER fabricate URLs; confirm with user
+
+### Header Pill Link Template (for Next.js dashboard apps)
+```tsx
+<a href="URL" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full"
+  style={{ background: "rgba(R,G,B,0.12)", color: "HEX", border: "1px solid rgba(R,G,B,0.3)" }}>
+  {"\uEMOJI"} AppName
+</a>
+```
+
+### Footer Link Template
+```tsx
+<a href="URL" target="_blank" rel="noopener" className="underline"
+  style={{ color: "var(--text-muted)" }}>AppName</a>{" \u00B7 "}
+```
+
+### Blog Header Link Template (Nunjucks)
+```html
+<a href="URL" target="_blank" rel="noopener noreferrer" class="header-link header-link--ghost">EMOJI AppName</a>
+```
+
+### Blog Quick Link Card Template
+```html
+<a href="URL" target="_blank" rel="noopener" class="quick-link-card">
+  <div class="quick-link-icon quick-link-icon--COLOR">EMOJI_HTML</div>
+  <div class="quick-link-text">
+    AppName
+    <span class="quick-link-sub">Short description</span>
+  </div>
+</a>
+```
+
+## Build Notes (Windows)
+
+- `.next` directory locking: kill all `node.exe` before rebuild if EPERM errors
+- `Remove-Item -Recurse -Force .next` to clean build cache
+- TransitionOS may need `npm install --install-strategy=nested` due to workspace hoisting
